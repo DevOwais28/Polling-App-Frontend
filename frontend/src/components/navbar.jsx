@@ -84,21 +84,27 @@ const Navbar = () => {
             )}
           </nav>
 
-          {/* Mobile Menu */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <button className="md:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors">
-                <Menu className="h-5 w-5 text-gray-700" />
-              </button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-72">
-              <SheetHeader>
+          {/* Mobile Notifications + Menu */}
+          <div className="md:hidden flex items-center gap-2">
+            <NotificationsBell />
+            <Sheet>
+              <SheetTrigger asChild>
+                <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors">
+                  <Menu className="h-5 w-5 text-gray-700" />
+                </button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-72">
+              <SheetHeader className="border-b pb-2 mb-3">
                 <div className="flex items-center justify-between">
                   <SheetTitle>Menu</SheetTitle>
-                  <NotificationsBell />
                 </div>
               </SheetHeader>
               <div className="py-4 space-y-3">
+                {isFeed && (
+                  <div className="mb-4 px-1">
+                    <SearchBar />
+                  </div>
+                )}
                 {user ? (
                   <>
                     <Link to="/feed" className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-100 transition-colors">
@@ -151,6 +157,7 @@ const Navbar = () => {
               </div>
             </SheetContent>
           </Sheet>
+          </div>
         </div>
       </div>
     </header>
