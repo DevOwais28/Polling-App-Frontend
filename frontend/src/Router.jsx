@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import Signup from "./pages/Signup";
 import LandingPage from "./pages/landingPage";
 import Login from "./pages/login";
@@ -15,7 +15,6 @@ import SettingsPage from "./pages/settings";
 const Router = () => {
   useAppStore();
   return (
-    <BrowserRouter>
       <Routes>
 
         <Route path="/" element={
@@ -76,7 +75,6 @@ const Router = () => {
         } />
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
-    </BrowserRouter>
   );
 };
 
