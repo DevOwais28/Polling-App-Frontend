@@ -12,8 +12,8 @@ function App() {
   const setUser = useAppStore((state) => state.setUser);
   const { needsSetup, loading } = useProfileCheck();
 
-  const handleProfileComplete = (updatedUser) => {
-    setUser(updatedUser);
+  const handleProfileComplete = () => {
+    // ProfileSetup already updates the user in the store and localStorage
   };
 
   if (loading) {
