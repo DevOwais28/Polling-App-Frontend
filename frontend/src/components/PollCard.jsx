@@ -114,36 +114,9 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
 
   return (
     <div className="p-4 sm:p-6 relative">
-      {/* Poll Actions Dropdown */}
-      {isPollOwner && (
-        <div className="absolute top-4 right-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
-                <span className="sr-only">Poll actions</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
-                <Edit className="mr-2 h-4 w-4" />
-                <span>Edit Poll</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                className="text-red-600 focus:text-red-600"
-                onClick={handleDeletePoll}
-                disabled={isDeleting}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                <span>{isDeleting ? 'Deleting...' : 'Delete Poll'}</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )}
 
-      {/* Creator Info */}
-      <div className="flex items-center justify-between mb-4">
+      {/* Creator Info and Actions */}
+      <div className="flex items-start justify-between gap-3 mb-4">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
             <AvatarImage 
@@ -163,13 +136,39 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
-          <span className="hidden sm:inline">{formatDate(poll.createdAt || new Date())}</span>
-          <span className="sm:hidden">{formatDateShort(poll.createdAt || new Date())}</span>
-          <span>•</span>
-          <span className="text-green-600 font-medium">
-            {poll.isPrivate ? 'Private' : 'Public'}
-          </span>
+        <div className="flex flex-col items-end gap-1 text-xs sm:text-sm text-gray-500">
+          {isPollOwner && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
+                  <MoreVertical className="h-4 w-4" />
+                  <span className="sr-only">Poll actions</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+                  <Edit className="mr-2 h-4 w-4" />
+                  <span>Edit Poll</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  className="text-red-600 focus:text-red-600"
+                  onClick={handleDeletePoll}
+                  disabled={isDeleting}
+                >
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  <span>{isDeleting ? 'Deleting...' : 'Delete Poll'}</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          <div className="flex items-center gap-2">
+            <span className="hidden sm:inline">{formatDate(poll.createdAt || new Date())}</span>
+            <span className="sm:hidden">{formatDateShort(poll.createdAt || new Date())}</span>
+            <span>•</span>
+            <span className="text-green-600 font-medium">
+              {poll.isPrivate ? 'Private' : 'Public'}
+            </span>
+          </div>
         </div>
       </div>
       
