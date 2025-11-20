@@ -142,7 +142,8 @@ const PrivatePollView = () => {
           percentage: Math.round(r.percentage)
         })));
         setTotalVotes(data.totalVotes);
-        setHasVoted(!!data.hasVoted);
+        // Only ever turn hasVoted on; don't flip it back to false once true
+        setHasVoted(prev => prev || !!data.hasVoted);
       }
     });
 
