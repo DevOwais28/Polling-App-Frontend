@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './App.css';
 import { Toaster } from "@/components/ui/sonner";
-import { useLocation } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import Router from './Router.jsx';
 import { useProfileCheck } from './hooks/useProfileCheck';
 import ProfileSetup from './components/ProfileSetup';
@@ -25,14 +25,14 @@ function App() {
   }
 
   return (
-    <>
+    <BrowserRouter>
       <Toaster />
       {user && needsSetup ? (
         <ProfileSetup onComplete={handleProfileComplete} />
       ) : (
         <Router />
       )}
-    </>
+    </BrowserRouter>
   )
 }
 
