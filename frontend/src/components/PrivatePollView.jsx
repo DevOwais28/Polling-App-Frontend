@@ -36,29 +36,29 @@ const PrivatePollView = () => {
             // Fetch votes
             const votesResponse = await apiRequest("GET", `/votes/vote/${pollId}`);
             const votes = votesResponse.data.votes || [];
-            
+
             // Check if user has already voted
             const userVote = votes.find(vote => 
               vote.user === profileResponse.data._id || 
               vote.userId === profileResponse.data._id
             );
-            
+
             if (userVote) {
               setHasVoted(true);
               setSelectedOption(userVote.optionIndex);
             }
-            
+
             // Calculate initial results
+            const totalVotes = votes.length;
             const calculatedResults = response.data.poll.options.map((option, index) => {
               const optionVotes = votes.filter(v => v.optionIndex === index).length;
-              const totalVotes = votes.length;
               return {
                 option,
                 votes: optionVotes,
                 percentage: totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0
               }
-            })
-            
+            });
+
             setResults(calculatedResults);
             setTotalVotes(totalVotes);
             
@@ -95,7 +95,7 @@ const PrivatePollView = () => {
   useEffect(() => {
     if (!pollId || !user?._id) return;
 
-    const newSocket = io(import.meta.env.VITE_API_URL || "http://localhost:3000", {
+    const newSocket = io("https://polling-app-frontend-coral.vercel.app", {
       withCredentials: true,
       transports: ['websocket'],
       reconnection: true,
