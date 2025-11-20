@@ -180,7 +180,7 @@ const NotificationsBell = () => {
 
       {/* Notifications Dropdown */}
       {isOpen && (
-        <Card className="fixed inset-0 sm:absolute sm:right-0 sm:top-full sm:mt-2 sm:w-96 sm:max-h-[calc(100vh-4rem)] sm:rounded-lg overflow-hidden shadow-xl z-50 sm:max-w-none w-full h-full sm:h-auto bg-white flex flex-col">
+        <Card className="absolute right-0 top-full mt-2 w-96 max-h-[calc(100vh-4rem)] rounded-lg overflow-hidden shadow-xl z-50 bg-white flex flex-col">
           {/* Mobile header */}
           <div className="sm:hidden flex items-center justify-between p-4 border-b">
             <h3 className="text-lg font-semibold">Notifications</h3>
