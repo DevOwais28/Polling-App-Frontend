@@ -71,7 +71,7 @@ export default function Signup() {
   });
 
   async function continueWithGoogle() {
-    window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api/auth/google`;
+    window.location.href = `${import.meta.env.VITE_API_URL || 'https://polling-app-production-142d.up.railway.app'}/api/auth/google`;
   }
 
   useEffect(() => {
