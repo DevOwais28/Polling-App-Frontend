@@ -106,7 +106,7 @@ const CommentSection = ({ pollId }) => {
       </button>
 
       {showComments && (
-        <div className="mt-3 space-y-4 text-left max-h-80 overflow-y-auto pr-1">
+        <div className="mt-3 space-y-4 text-left">
           {/* Add Comment Form */}
           {user ? (
             <div className="bg-gray-50 rounded-lg p-3">
@@ -153,9 +153,9 @@ const CommentSection = ({ pollId }) => {
             </div>
           )}
 
-          {/* Comments List (scrollable to keep section compact) */}
+          {/* Comments List */}
           {comments.length > 0 && (
-            <div className="space-y-3 text-left max-h-64 overflow-y-auto pr-1">
+            <div className="space-y-3 text-left">
               {comments.map((comment) => (
                 <div key={comment._id} className="bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition-colors text-left">
                   <div className="flex gap-3 text-left">
