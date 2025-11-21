@@ -106,7 +106,7 @@ const CommentSection = ({ pollId }) => {
       </button>
 
       {showComments && (
-        <div className="mt-4 space-y-4 text-left">
+        <div className="mt-3 space-y-4 text-left max-h-80 overflow-y-auto pr-1">
           {/* Add Comment Form */}
           {user ? (
             <div className="bg-gray-50 rounded-lg p-3">
