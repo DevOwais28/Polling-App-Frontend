@@ -91,7 +91,7 @@ const CommentSection = ({ pollId }) => {
   };
 
   return (
-    <div className="mt-4 border-t border-gray-100 pt-4">
+    <div className="mt-3 border-t border-gray-100 pt-3">
       <button
         onClick={() => setShowComments(!showComments)}
         className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors group"
@@ -109,7 +109,7 @@ const CommentSection = ({ pollId }) => {
         <div className="mt-4 space-y-4 text-left">
           {/* Add Comment Form */}
           {user ? (
-            <div className="bg-gray-50 rounded-lg p-4">
+            <div className="bg-gray-50 rounded-lg p-3">
               <div className="flex gap-3">
                 <Avatar className="w-8 h-8 ring-2 ring-white flex-shrink-0">
                   <AvatarImage src={user.avatar} />
@@ -153,9 +153,9 @@ const CommentSection = ({ pollId }) => {
             </div>
           )}
 
-          {/* Comments List */}
+          {/* Comments List (scrollable to keep section compact) */}
           {comments.length > 0 && (
-            <div className="space-y-3 text-left">
+            <div className="space-y-3 text-left max-h-64 overflow-y-auto pr-1">
               {comments.map((comment) => (
                 <div key={comment._id} className="bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition-colors text-left">
                   <div className="flex gap-3 text-left">
@@ -195,10 +195,8 @@ const CommentSection = ({ pollId }) => {
           )}
 
           {comments.length === 0 && !loading && (
-            <div className="text-left py-8">
-              <MessageCircle className="w-12 h-12 text-gray-300 mb-3" />
-              <p className="text-sm text-gray-500 font-medium text-left">No comments yet</p>
-              <p className="text-xs text-gray-400 mt-1 text-left">Be the first to share your thoughts!</p>
+            <div className="text-left py-4 text-gray-500 text-sm">
+              <p>No comments yet. Be the first to share your thoughts!</p>
             </div>
           )}
         </div>
