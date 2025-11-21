@@ -113,10 +113,10 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
   };
 
   return (
-    <div className="p-3 sm:p-5 relative">
+    <div className="p-4 sm:p-6 relative">
 
       {/* Creator Info and Actions */}
-      <div className="flex items-start justify-between gap-3 mb-4">
+      <div className="flex items-start justify-between gap-3 mb-5">
         <div className="flex items-center gap-3">
           <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
             <AvatarImage 
@@ -171,12 +171,12 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
       </div>
       
       {/* Poll Question */}
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6 leading-tight">
+      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-5 sm:mb-6 leading-tight">
         {poll.description || 'Untitled Poll'}
       </h3>
 
       {/* Poll Options */}
-      <div className="mb-4 sm:mb-6">
+      <div className="mb-5 sm:mb-6">
         <PollProgress
           key={poll._id}
           options={poll.options || []}
@@ -186,7 +186,7 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
       </div>
 
       {/* Poll Stats (compact) */}
-      <div className="flex justify-end pt-3 border-t border-gray-100">
+      <div className="flex justify-end pt-3 mt-1 border-t border-gray-100">
         <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
           {!isExpired && timeRemaining > 0 ? (
             <>
@@ -200,7 +200,7 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
       </div>
 
       {/* Comment Section */}
-      <div className="mt-4">
+      <div className="mt-5 pt-2">
         <CommentSection pollId={poll._id} />
         <ShareButton pollId={poll._id} pollDescription={poll.description} />
       </div>
