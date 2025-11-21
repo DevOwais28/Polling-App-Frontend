@@ -175,7 +175,7 @@ const CommentSection = ({ pollId }) => {
                       <div className="flex justify-between items-start mb-2 text-left">
                         <div className="flex items-center gap-2 text-left">
                           <p className="text-xs text-gray-500 text-left">
-                            @{comment.userId?.username || 'anonymous'}
+                            @{comment.userId?.name || 'Anonymous'}
                           </p>
                           <p className="text-xs text-gray-400 hidden sm:inline">•</p>
                           <p className="text-xs text-gray-400">
