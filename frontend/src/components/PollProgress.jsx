@@ -171,10 +171,6 @@ const handleVote = async (optionIndex) => {
           </button>
         );
       })}
-
-      <p className="text-sm text-gray-600 text-center">
-        {totalVotes} {totalVotes === 1 ? "vote" : "votes"} total
-      </p>
     </div>
   );
 };
