@@ -29,7 +29,7 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
   // Calculate expiration status
   const isExpired = poll.expiresAt && new Date() > new Date(poll.expiresAt);
   const timeRemaining = poll.expiresAt 
-    ? Math.ceil((new Date(poll.expiresAt) - new Date()) / (1000 * 60 * 60))
+    ? Math.max(1, Math.floor((new Date(poll.expiresAt) - new Date()) / (1000 * 60 * 60)))
     : null;
   const currentUser = useAppStore(state => state.user);
   const isPollOwner = currentUser?._id === poll.createdBy?._id;
@@ -113,7 +113,7 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
   };
 
   return (
-    <div className="p-4 sm:p-6 relative">
+    <div className="p-3 sm:p-5 relative">
 
       {/* Creator Info and Actions */}
       <div className="flex items-start justify-between gap-3 mb-4">
@@ -187,13 +187,10 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
         />
       </div>
 
-      {/* Poll Stats */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pt-4 border-t border-gray-100">
-        <div className="flex items-center gap-4 text-xs sm:text-sm text-gray-500">
+      {/* Poll Stats (compact) */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pt-3 border-t border-gray-100">
+        <div className="flex items-center gap-3 text-xs sm:text-sm text-gray-500">
           <span>{poll.options?.length || 0} options</span>
-          <span>•</span>
-          <span className="hidden sm:inline">{formatDate(poll.createdAt || new Date())}</span>
-          <span className="sm:hidden">{formatDateShort(poll.createdAt || new Date())}</span>
         </div>
         <div className="flex items-center gap-2">
           {!isExpired && timeRemaining > 0 ? (
