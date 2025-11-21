@@ -9,11 +9,13 @@ import useAppStore from '../store';
 
 export function CommentActions({ comment, onUpdate, onDelete }) {
   const [isEditing, setIsEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState(comment.content);
+  const [editedContent, setEditedContent] = useState(comment.text || comment.content || "");
   const [isLoading, setIsLoading] = useState(false);
   const currentUser = useAppStore(state => state.user);
-
-  const isCurrentUserComment = currentUser?._id === comment.user?._id;
+  const ownerId = comment.userId?._id || comment.userId; // populated user or raw id
+  const isCurrentUserComment = currentUser?._id && ownerId
+    ? currentUser._id.toString() === ownerId.toString()
+    : false;
   
   if (!isCurrentUserComment) {
     return (
@@ -32,13 +34,13 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
 
     try {
       setIsLoading(true);
-      const response = await apiRequest('PUT', `comment/${comment._id}`, {
-        content: editedContent
+      const response = await apiRequest('PUT', `comments/comment/${comment._id}`, {
+        text: editedContent
       });
       
-      if (response.data) {
+      if (response.data?.success && response.data.comment) {
         toast.success('Comment updated');
-        onUpdate(response.data);
+        onUpdate(response.data.comment);
         setIsEditing(false);
       }
     } catch (error) {
@@ -50,13 +52,9 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this comment?')) {
-      return;
-    }
-
     try {
       setIsLoading(true);
-      await apiRequest('DELETE', `comment/${comment._id}`);
+      await apiRequest('DELETE', `comments/comment/${comment._id}`);
       toast.success('Comment deleted');
       onDelete(comment._id);
     } catch (error) {
