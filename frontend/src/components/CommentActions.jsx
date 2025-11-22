@@ -95,8 +95,11 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
   }
 
   return (
-    <div className="flex items-center gap-2 text-xs text-gray-500">
-      <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+  <div className="flex items-center gap-2 text-xs text-gray-500">
+  <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
+
+  {isOwner && (
+    <>
       <span>•</span>
       <button
         onClick={() => setIsEditing(true)}
@@ -105,6 +108,7 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
       >
         Edit
       </button>
+
       <span>•</span>
       <button
         onClick={handleDelete}
@@ -113,6 +117,10 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
       >
         Delete
       </button>
-    </div>
+    </>
+  )}
+</div>
+      
+      
   );
 }
