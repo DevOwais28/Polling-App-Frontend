@@ -59,9 +59,14 @@ export function CommentActions({ comment, onUpdate, onDelete, isOwner }) {
   const handleDelete = async () => {
     try {
       setIsLoading(true);
-      await apiRequest('DELETE', `comments/comment/${comment._id}`);
-      toast.success('Comment deleted');
-      onDelete(comment._id);
+      const response = await apiRequest('DELETE', `comments/comment/${comment._id}`);
+
+      if (response.data?.success) {
+        toast.success('Comment deleted');
+        onDelete(comment._id);
+      } else {
+        toast.error(response.data?.message || 'Failed to delete comment');
+      }
     } catch (error) {
       console.error('Error deleting comment:', error);
       toast.error(error.response?.data?.message || 'Failed to delete comment');
