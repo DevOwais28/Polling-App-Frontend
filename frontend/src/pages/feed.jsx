@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "../components/app-sidebar"
 import Navbar from '@/components/navbar'
@@ -8,7 +8,7 @@ import TrendingSection from '@/components/TrendingSection'
 import { apiRequest } from '@/api'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 const Feed = () => {
   const [polls, setPolls] = useState([])
@@ -16,12 +16,31 @@ const Feed = () => {
   const [error, setError] = useState(null)
   const [highlightedPollId, setHighlightedPollId] = useState(null)
   const location = useLocation()
+  const navigate = useNavigate()
+  const pollRefs = useRef({})
 
   useEffect(() => {
     // Derive highlighted poll from query string (reacts to SPA navigation)
     const qp = new URLSearchParams(location.search)
-    setHighlightedPollId(qp.get('pollId'))
-  }, [location.search])
+    const pollIdFromQuery = qp.get('pollId')
+
+    // If a pollId is present in the URL and it's not already highlighted,
+    // set it in state and then clean up the URL (remove the query param)
+    if (pollIdFromQuery && pollIdFromQuery !== highlightedPollId) {
+      setHighlightedPollId(pollIdFromQuery)
+      navigate(location.pathname, { replace: true })
+    }
+  }, [location.search, location.pathname, navigate, highlightedPollId])
+
+  useEffect(() => {
+    // When polls and highlightedPollId are ready, scroll that poll into view
+    if (!loading && highlightedPollId && pollRefs.current[highlightedPollId]) {
+      pollRefs.current[highlightedPollId].scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+      })
+    }
+  }, [loading, highlightedPollId])
 
   useEffect(() => {
     // Handle Google auth redirect
@@ -155,6 +174,11 @@ const Feed = () => {
                   return (
                     <div
                       key={poll?._id || index}
+                      ref={(el) => {
+                        if (poll?._id) {
+                          pollRefs.current[poll._id] = el
+                        }
+                      }}
                       className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow duration-200 ${
                         isHighlighted ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
                       }`}
