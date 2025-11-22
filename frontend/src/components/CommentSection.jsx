@@ -182,11 +182,12 @@ const CommentSection = ({ pollId }) => {
                             
                           </p>
                         </div>
-                        <CommentActions 
-                          comment={comment} 
-                          onUpdate={handleUpdateComment} 
-                          onDelete={handleDeleteComment} 
-                        />
+                        <CommentActions
+  comment={comment}
+  isOwner={comment.userId?._id === user?._id}
+  onUpdate={handleUpdateComment}
+  onDelete={handleDeleteComment}
+/>
                       </div>
                       <p className="mt-1 text-sm text-gray-700">
                         {comment.content || comment.text}
