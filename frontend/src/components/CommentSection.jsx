@@ -174,20 +174,32 @@ const CommentSection = ({ pollId }) => {
                     <div className="flex-1 min-w-0 text-left">
                       <div className="flex justify-between items-start mb-2 text-left">
                         <div className="flex items-center gap-2 text-left">
+                          <p className="text-sm font-semibold text-gray-900 text-left">
+                            {truncate(comment.userId?.name || 'Anonymous User', 18)}
+                          </p>
                           <p className="text-xs text-gray-500 text-left">
-                            @{comment.userId?.name || 'Anonymous'}
+                            @{comment.userId?.username || 'anonymous'}
                           </p>
                           <p className="text-xs text-gray-400 hidden sm:inline">•</p>
                           <p className="text-xs text-gray-400">
-                            
+                            {formatDate(comment.createdAt)}
                           </p>
                         </div>
-                        <CommentActions
-  comment={comment}
-  isOwner={comment.userId?._id === user?._id}
-  onUpdate={handleUpdateComment}
-  onDelete={handleDeleteComment}
-/>
+                        <CommentActions 
+                          comment={comment} 
+                          isOwner={
+                            // Match by various possible identifier shapes
+                            comment.userId?._id === user?._id ||
+                            comment.userId === user?._id ||
+                            comment.userId === user?.id ||
+                            comment.userId?._id === user?.id ||
+                            // Fallback to username/email match
+                            (comment.userId?.username && comment.userId?.username === user?.username) ||
+                            (comment.userId?.email && comment.userId?.email === user?.email)
+                          }
+                          onUpdate={handleUpdateComment} 
+                          onDelete={handleDeleteComment} 
+                        />
                       </div>
                       <p className="mt-1 text-sm text-gray-700">
                         {comment.content || comment.text}
