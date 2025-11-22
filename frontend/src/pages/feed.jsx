@@ -1,3 +1,13 @@
+import React, { useState, useEffect } from 'react'
+import { SidebarProvider } from "@/components/ui/sidebar"
+import { AppSidebar } from "../components/app-sidebar"
+import Navbar from '@/components/navbar'
+import CreatePoll from '@/components/CreatePoll'
+import PollCard from '@/components/PollCard'
+import TrendingSection from '@/components/TrendingSection'
+import { apiRequest } from '@/api'
+import { Button } from '@/components/ui/button'
+import { toast } from 'sonner'
 const Feed = () => {
   const [polls, setPolls] = useState([])
   const [loading, setLoading] = useState(true)
