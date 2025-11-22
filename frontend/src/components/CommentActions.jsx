@@ -37,13 +37,16 @@ export function CommentActions({ comment, onUpdate, onDelete, isOwner }) {
     try {
       setIsLoading(true);
       const response = await apiRequest('PUT', `comments/comment/${comment._id}`, {
-        text: editedContent
+        text: editedContent,
+        content: editedContent
       });
       
       if (response.data?.success && response.data.comment) {
         toast.success('Comment updated');
         onUpdate(response.data.comment);
         setIsEditing(false);
+      } else {
+        toast.error(response.data?.message || 'Failed to update comment');
       }
     } catch (error) {
       console.error('Error updating comment:', error);
