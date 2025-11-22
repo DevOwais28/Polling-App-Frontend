@@ -61,6 +61,7 @@ const Profile = () => {
       const response = await apiRequest('GET', `/profile/${userId}`);
       if (response.data.success) {
         setProfileUser(response.data.user);
+        console.log("profileUser",profileUser);
       } else {
         setProfileUser(null); // User not found
         toast.error('User not found');
