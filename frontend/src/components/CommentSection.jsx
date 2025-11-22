@@ -178,7 +178,7 @@ const CommentSection = ({ pollId }) => {
                             {truncate(comment.userId?.name || 'Anonymous User', 18)}
                           </p>
                           <p className="text-xs text-gray-500 text-left">
-                            @{comment.userId?.username || 'anonymous'}
+                            {/* @{comment.userId?.username || 'anonymous'} */}
                           </p>
                           <p className="text-xs text-gray-400 hidden sm:inline">•</p>
                           <p className="text-xs text-gray-400">
