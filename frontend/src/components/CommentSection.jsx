@@ -86,9 +86,11 @@ const CommentSection = ({ pollId }) => {
   };
 
   const handleUpdateComment = (updatedComment) => {
-    setComments(comments.map(c => 
-      c._id === updatedComment._id ? updatedComment : c
-    ));
+    setComments(prevComments =>
+      prevComments.map(c =>
+        c._id === updatedComment._id ? updatedComment : c
+      )
+    );
   };
 
   const handleDeleteComment = (commentId) => {
@@ -182,7 +184,7 @@ const CommentSection = ({ pollId }) => {
                           </p>
                           <p className="text-xs text-gray-400 hidden sm:inline">•</p>
                           <p className="text-xs text-gray-400">
-                          
+                            {/* {formatDate(comment.createdAt)} */}
                           </p>
                         </div>
                         <CommentActions 
