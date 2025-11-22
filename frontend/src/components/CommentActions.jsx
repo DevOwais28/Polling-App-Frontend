@@ -7,15 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { formatDistanceToNow } from 'date-fns';
 import useAppStore from '../store';
 
-export function CommentActions({ comment, onUpdate, onDelete }) {
+export function CommentActions({ comment, onUpdate, onDelete, isOwner }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.text || comment.content || "");
   const [isLoading, setIsLoading] = useState(false);
   const currentUser = useAppStore(state => state.user);
   const ownerId = comment.userId?._id || comment.userId; // populated user or raw id
-  const isCurrentUserComment = currentUser?._id && ownerId
+  const computedIsOwner = currentUser?._id && ownerId
     ? currentUser._id.toString() === ownerId.toString()
     : false;
+  const isCurrentUserComment =
+    typeof isOwner === 'boolean' ? isOwner : computedIsOwner;
   
   if (!isCurrentUserComment) {
     return (
@@ -95,11 +97,8 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
   }
 
   return (
-  <div className="flex items-center gap-2 text-xs text-gray-500">
-  <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
-
-  {isOwner && (
-    <>
+    <div className="flex items-center gap-2 text-xs text-gray-500">
+      <span>{formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}</span>
       <span>•</span>
       <button
         onClick={() => setIsEditing(true)}
@@ -108,7 +107,6 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
       >
         Edit
       </button>
-
       <span>•</span>
       <button
         onClick={handleDelete}
@@ -117,10 +115,6 @@ export function CommentActions({ comment, onUpdate, onDelete }) {
       >
         Delete
       </button>
-    </>
-  )}
-</div>
-      
-      
+    </div>
   );
 }
