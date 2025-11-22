@@ -28,58 +28,66 @@ const avatarOptions = [
 const Profile = () => {
   const { userId } = useParams();
   const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [username, setUsername] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [privatePollsLoading, setPrivatePollsLoading] = useState(false);
-  const [usernameError, setUsernameError] = useState('');
-  const [profileUser, setProfileUser] = useState(null);
-  const [privatePolls, setPrivatePolls] = useState([]);
-  
+
   const currentUser = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
 
-  // Check if viewing own profile or someone else's
+  const [profileUser, setProfileUser] = useState(null);
+  const [username, setUsername] = useState('');
+  const [selectedAvatar, setSelectedAvatar] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [privatePolls, setPrivatePolls] = useState([]);
+  const [privatePollsLoading, setPrivatePollsLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState('');
+
+  // Determine if viewing own profile
   const isOwnProfile = !userId || userId === currentUser?._id;
+  const profileId = isOwnProfile ? currentUser?._id : userId;
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
   useEffect(() => {
-    if (isOwnProfile && currentUser) {
-      setUsername(currentUser.username || '');
-      setSelectedAvatar(currentUser.avatar || avatarOptions[0]);
-      // Fetch private polls for own profile
-      fetchPrivatePolls(currentUser._id);
-    } else if (!isOwnProfile && userId) {
-      fetchUserProfile(userId);
-    }
-  }, [isOwnProfile, currentUser, userId]);
+    if (!profileId) return;
 
-  const fetchUserProfile = async (userId) => {
-    setProfileLoading(true);
-    try {
-      const response = await apiRequest('GET', `/profile/${userId}`);
-      if (response.data.success) {
-        setProfileUser(response.data.user);
+    const fetchProfile = async () => {
+      try {
+        if (isOwnProfile) {
+          // Own profile
+          setUsername(currentUser.username || '');
+          setSelectedAvatar(currentUser.avatar || avatarOptions[0]);
+          fetchPrivatePolls(currentUser._id);
+        } else {
+          // Other user's profile
+          setProfileLoading(true);
+          const res = await apiRequest('GET', `/profile/${profileId}`);
+          if (res.data.success) {
+            setProfileUser(res.data.user);
+          } else {
+            toast.error('User not found');
+            navigate('/profile');
+          }
+        }
+      } catch (err) {
+        toast.error('Failed to load user profile');
+        navigate('/profile');
+      } finally {
+        setProfileLoading(false);
       }
-    } catch (error) {
-      toast.error('Failed to load user profile');
-      navigate('/profile');
-    } finally {
-      setProfileLoading(false);
-    }
-  };
+    };
+
+    fetchProfile();
+  }, [profileId, currentUser, isOwnProfile, navigate]);
 
   const fetchPrivatePolls = async (userId) => {
     setPrivatePollsLoading(true);
     try {
-      const response = await apiRequest('GET', `/profile/${userId}/private-polls`);
-      if (response.data.success) {
-        setPrivatePolls(response.data.polls);
+      const res = await apiRequest('GET', `/profile/${userId}/private-polls`);
+      if (res.data.success) {
+        setPrivatePolls(res.data.polls);
       }
-    } catch (error) {
-      console.error('Failed to load private polls:', error);
+    } catch (err) {
+      console.error('Failed to load private polls:', err);
     } finally {
       setPrivatePollsLoading(false);
     }
@@ -99,28 +107,25 @@ const Profile = () => {
   };
 
   const handleSave = async () => {
-    if (!validateUsername(username)) {
-      return;
-    }
+    if (!validateUsername(username)) return;
 
     setLoading(true);
     try {
-      const response = await apiRequest('PUT', 'profile/update', {
+      const res = await apiRequest('PUT', 'profile/update', {
         username,
         avatar: selectedAvatar
       });
-
-      if (response.data.success) {
+      if (res.data.success) {
         toast.success('Profile updated successfully!');
-        setUser(response.data.user);
+        setUser(res.data.user);
         setIsEditing(false);
       }
-    } catch (error) {
-      console.error('Profile update error:', error);
-      if (error.response?.data?.message?.includes('taken')) {
+    } catch (err) {
+      console.error(err);
+      if (err.response?.data?.message?.includes('taken')) {
         setUsernameError('Username already taken');
       } else {
-        toast.error(error.response?.data?.message || 'Failed to update profile');
+        toast.error(err.response?.data?.message || 'Failed to update profile');
       }
     } finally {
       setLoading(false);
@@ -173,8 +178,8 @@ const Profile = () => {
                 </CardDescription>
               </div>
               {!isOwnProfile && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => navigate('/profile')}
                   className="flex items-center gap-2"
                 >
@@ -198,14 +203,13 @@ const Profile = () => {
               </div>
             </div>
 
-            {/* Private Polls Section - Only for own profile */}
+            {/* Private Polls Section */}
             {isOwnProfile && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 border-t pt-6">
                   <Lock className="w-4 h-4 text-gray-600" />
                   <h4 className="text-lg font-semibold">My Private Polls</h4>
                 </div>
-                
                 {privatePollsLoading ? (
                   <div className="flex justify-center py-8">
                     <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
@@ -219,36 +223,11 @@ const Profile = () => {
                   <div className="space-y-3">
                     {privatePolls.map((poll) => (
                       <Card key={poll._id} className="border-l-4 border-l-blue-500">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h5 className="font-medium text-gray-900 mb-2">{poll.description}</h5>
-                              <div className="space-y-1">
-                                {poll.options?.slice(0, 3).map((option, index) => (
-                                  <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                                    <span>{option.text}</span>
-                                  </div>
-                                ))}
-                                {poll.options?.length > 3 && (
-                                  <p className="text-xs text-gray-500">+{poll.options.length - 3} more options</p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                              <Eye className="w-3 h-3" />
-                              <span>Private</span>
-                            </div>
-                          </div>
-                          <div className="mt-3 flex items-center justify-between">
-                            <p className="text-xs text-gray-500">
-                              Created {new Date(poll.createdAt).toLocaleDateString()}
-                            </p>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => navigate(`/poll/${poll._id}`)}
-                            >
+                        <CardContent className="p-4 flex flex-col gap-2">
+                          <h5 className="font-medium text-gray-900">{poll.description}</h5>
+                          <div className="flex items-center justify-between text-xs text-gray-500">
+                            <span>Created {new Date(poll.createdAt).toLocaleDateString()}</span>
+                            <Button size="sm" variant="outline" onClick={() => navigate(`/poll/${poll._id}`)}>
                               View Poll
                             </Button>
                           </div>
@@ -260,7 +239,7 @@ const Profile = () => {
               </div>
             )}
 
-            {/* Edit Section - Only for own profile */}
+            {/* Edit Section */}
             {isOwnProfile && (
               <>
                 {!isEditing ? (
@@ -272,7 +251,6 @@ const Profile = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {/* Username Edit */}
                     <div className="space-y-2">
                       <Label htmlFor="username">Username</Label>
                       <Input
@@ -286,12 +264,9 @@ const Profile = () => {
                         maxLength={20}
                         className={usernameError ? "border-red-500" : ""}
                       />
-                      {usernameError && (
-                        <p className="text-sm text-red-500">{usernameError}</p>
-                      )}
+                      {usernameError && <p className="text-sm text-red-500">{usernameError}</p>}
                     </div>
 
-                    {/* Avatar Selection */}
                     <div className="space-y-2">
                       <Label>Choose Avatar</Label>
                       <div className="grid grid-cols-6 gap-3">
@@ -319,7 +294,6 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-2">
                       <Button onClick={handleSave} disabled={loading || usernameError}>
                         {loading ? 'Saving...' : 'Save Changes'}
