@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useLocation } from 'react-router-dom'
 import { SidebarProvider } from "@/components/ui/sidebar"
 import { AppSidebar } from "../components/app-sidebar"
 import Navbar from '@/components/navbar'
@@ -8,11 +9,15 @@ import TrendingSection from '@/components/TrendingSection'
 import { apiRequest } from '@/api'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+
 const Feed = () => {
   const [polls, setPolls] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const location = useLocation()
+  const [highlightPollId, setHighlightPollId] = useState(null)
 
+  // Handle auth via query param
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const authData = params.get("auth")
@@ -20,17 +25,14 @@ const Feed = () => {
     if (authData) {
       try {
         const parsed = JSON.parse(decodeURIComponent(authData))
-
         if (parsed.login && parsed.token && parsed.user) {
           localStorage.setItem("token", parsed.token)
           localStorage.setItem("user", JSON.stringify(parsed.user))
-
           toast.success(
             parsed.user.isNewUser
               ? "Welcome to WePollin! Your account has been created successfully."
               : "Successfully logged in with Google"
           )
-
           window.history.replaceState({}, "", window.location.pathname)
         }
       } catch (e) {
@@ -42,6 +44,7 @@ const Feed = () => {
     fetchPolls()
   }, [])
 
+  // Fetch polls from API
   const fetchPolls = async () => {
     try {
       setLoading(true)
@@ -56,20 +59,34 @@ const Feed = () => {
   }
 
   const handlePollCreated = (newPoll) => {
-    if (newPoll?._id) {
-      setPolls(prev => [newPoll, ...prev])
-    } else {
-      fetchPolls()
-    }
+    if (newPoll?._id) setPolls(prev => [newPoll, ...prev])
+    else fetchPolls()
   }
 
   const handlePollUpdated = (updated) => {
     if (!updated) return fetchPolls()
-
-    setPolls(prev =>
-      prev.map(p => (p._id === updated._id ? updated : p))
-    )
+    setPolls(prev => prev.map(p => (p._id === updated._id ? updated : p)))
   }
+
+  // Scroll to poll if ?poll=ID exists
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    const pollId = params.get('poll')
+    if (pollId) setHighlightPollId(pollId)
+  }, [location.search])
+
+  useEffect(() => {
+    if (highlightPollId && polls.length) {
+      const el = document.getElementById(highlightPollId)
+      if (el) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // Optional: temporary highlight
+        el.classList.add('ring-2', 'ring-blue-400')
+        setTimeout(() => el.classList.remove('ring-2', 'ring-blue-400'), 3000)
+      }
+      setHighlightPollId(null)
+    }
+  }, [highlightPollId, polls])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -103,9 +120,7 @@ const Feed = () => {
             ) : error ? (
               <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-center">
                 <p className="text-red-600 mb-4">{error}</p>
-                <Button onClick={fetchPolls} className="bg-blue-600 text-white">
-                  Try Again
-                </Button>
+                <Button onClick={fetchPolls} className="bg-blue-600 text-white">Try Again</Button>
               </div>
             ) : polls.length === 0 ? (
               <div className="bg-white rounded-xl border p-6 sm:p-12 text-center">
@@ -125,7 +140,11 @@ const Feed = () => {
             ) : (
               <div className="space-y-4">
                 {polls.map((poll, i) => (
-                  <div key={poll?._id || i} className="bg-white rounded-xl border shadow-sm hover:shadow-md transition">
+                  <div
+                    key={poll?._id || i}
+                    id={poll?._id} // <--- add this for scroll
+                    className="bg-white rounded-xl border shadow-sm hover:shadow-md transition"
+                  >
                     <PollCard poll={poll} onVote={fetchPolls} onPollUpdated={handlePollUpdated} />
                   </div>
                 ))}
