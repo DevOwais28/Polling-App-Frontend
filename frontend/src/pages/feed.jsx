@@ -8,15 +8,20 @@ import TrendingSection from '@/components/TrendingSection'
 import { apiRequest } from '@/api'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
+import { useLocation } from 'react-router-dom'
 
 const Feed = () => {
   const [polls, setPolls] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [highlightedPollId, setHighlightedPollId] = useState(null)
+  const location = useLocation()
 
-  // Highlight a specific poll when navigated from notifications: /feed?pollId=...
-  const params = new URLSearchParams(window.location.search)
-  const highlightedPollId = params.get('pollId')
+  useEffect(() => {
+    // Derive highlighted poll from query string (reacts to SPA navigation)
+    const qp = new URLSearchParams(location.search)
+    setHighlightedPollId(qp.get('pollId'))
+  }, [location.search])
 
   useEffect(() => {
     // Handle Google auth redirect
