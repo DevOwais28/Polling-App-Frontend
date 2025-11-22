@@ -54,9 +54,9 @@ export default function Login() {
                 const response = await apiRequest('POST', 'users/login', data);
                 if (response?.data) {
                     setToken(response?.data.token);
-                    setUser(response?.data.userobj);
+                    setUser(response?.data.user);
                     localStorage.setItem('token', response?.data.token);
-                    localStorage.setItem('user', JSON.stringify(response?.data.userobj));
+                    localStorage.setItem('user', JSON.stringify(response?.data.user));
                     toast.success('Successfully logged in');
                     navigate('/feed');
                     formik.resetForm();
@@ -213,4 +213,5 @@ export default function Login() {
         </div>
     )
 }
+
 
