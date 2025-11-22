@@ -182,7 +182,7 @@ const CommentSection = ({ pollId }) => {
                           </p>
                           <p className="text-xs text-gray-400 hidden sm:inline">•</p>
                           <p className="text-xs text-gray-400">
-                            {formatDate(comment.createdAt)}
+                          
                           </p>
                         </div>
                         <CommentActions 
