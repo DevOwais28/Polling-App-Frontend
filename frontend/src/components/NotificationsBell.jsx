@@ -112,19 +112,35 @@ const NotificationsBell = () => {
   };
 
   const handleNotificationClick = (notification) => {
-    if (!notification.isRead) {
-      markAsRead(notification._id);
-    }
-    
-    // Navigate based on notification type
-    if (notification.type === 'profile_visit') {
-      navigate(`/profile/${notification.sender._id}`);
-    } else if (notification.relatedPoll) {
-      navigate(`/poll/${notification.relatedPoll._id}`);
-    }
-    
+  if (!notification.isRead) {
+    markAsRead(notification._id);
+  }
+
+  // Profile visit
+  if (notification.type === 'profile_visit') {
+    navigate(`/profile/${notification.sender._id}`);
     setIsOpen(false);
-  };
+    return;
+  }
+
+  // Poll-related notifications
+  if (notification.relatedPoll) {
+    const poll = notification.relatedPoll;
+
+    if (poll.isPrivate) {
+      // Private poll → /poll/:id
+      navigate(`/poll/${poll._id}`);
+    } else {
+      // Public poll → Feed with poll highlighted
+      navigate(`/feed?poll=${poll._id}`);
+    }
+
+    setIsOpen(false);
+    return;
+  }
+
+  setIsOpen(false);
+};
 
   const getNotificationIcon = (type) => {
     switch (type) {
