@@ -3,69 +3,68 @@ import { SearchIcon, X, User } from "lucide-react"
 import { apiRequest } from '@/api'
 import { Link } from 'react-router-dom'
 
+// Debounce hook
 function useDebounce(value, delay) {
-  const [debounced, setDebounced] = useState(value);
+  const [debounced, setDebounced] = useState(value)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebounced(value);
-    }, delay);
+    const timer = setTimeout(() => setDebounced(value), delay)
+    return () => clearTimeout(timer)
+  }, [value, delay])
 
-    return () => clearTimeout(timer);
-  }, [value, delay]);
-
-  return debounced;
+  return debounced
 }
 
 const SearchBar = () => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('')
+  const [isFocused, setIsFocused] = useState(false)
+  const [searchResults, setSearchResults] = useState([])
+  const [isLoading, setIsLoading] = useState(false)
 
-  // debounced value
-  const debouncedSearch = useDebounce(searchTerm, 500);
+  // Debounced value
+  const debouncedSearch = useDebounce(searchTerm, 500)
 
-  // effect triggers only after user stops typing for 500ms
+  // Fetch search results when user stops typing
   useEffect(() => {
     if (!debouncedSearch) {
-      setSearchResults([]);
-      return;
+      setSearchResults([])
+      return
     }
 
     const fetchData = async () => {
       try {
-        setIsLoading(true);
+        setIsLoading(true)
         const response = await apiRequest(
           "GET",
           `/profile/search/${debouncedSearch}`
-        );
-        
+        )
+
         if (response.data.success) {
-          setSearchResults(response.data.users || []);
+          setSearchResults(response.data.users || [])
         } else {
-          setSearchResults([]);
+          setSearchResults([])
         }
       } catch (err) {
-        console.error("Search error:", err);
-        setSearchResults([]);
+        console.error("Search error:", err)
+        setSearchResults([])
       } finally {
-        setIsLoading(false);
+        setIsLoading(false)
       }
-    };
+    }
 
-    fetchData();
-  }, [debouncedSearch]);
+    fetchData()
+  }, [debouncedSearch])
 
+  // Clear search input
   const clearSearch = () => {
-    setSearchTerm('');
-    setSearchResults([]);
-    setIsFocused(false);
-  };
+    setSearchTerm('')
+    setSearchResults([])
+    setIsFocused(false)
+  }
 
   const handleResultClick = () => {
-    clearSearch();
-  };
+    clearSearch()
+  }
 
   return (
     <div className="relative">
@@ -113,16 +112,16 @@ const SearchBar = () => {
             <div className="py-2">
               {searchResults.map((user) => (
                 <Link
-                  key={user.id}
-                  to={`/profile/${user.id}`}
+                  key={user._id} // use _id from API
+                  to={`/profile/${user._id}`}
                   onClick={handleResultClick}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
                 >
                   <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                     {user.avatar ? (
-                      <img 
-                        src={user.avatar} 
-                        alt={user.name || user.username} 
+                      <img
+                        src={user.avatar}
+                        alt={user.name || user.username}
                         className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
@@ -150,7 +149,7 @@ const SearchBar = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
-export default SearchBar;
+export default SearchBar
