@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { apiRequest } from '@/api';
 import { toast } from 'sonner';
+import { useNavigate } from 'react-router-dom';
 
 const NotificationsBell = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const NotificationsBell = () => {
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef(null);
+  const navigate = useNavigate();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -121,6 +123,32 @@ const NotificationsBell = () => {
     }
   };
 
+  const handleNotificationClick = async (notification) => {
+    try {
+      // Mark as read first if needed
+      if (!notification.isRead) {
+        await markAsRead(notification._id);
+      }
+
+      // Profile visit -> go to that profile
+      if (notification.type === 'profile_visit' && notification.sender && notification.sender._id) {
+        navigate(`/profile/${notification.sender._id}`);
+      }
+
+      // Poll-related notifications -> go to feed with pollId query
+      const pollRelatedTypes = ['poll_vote', 'poll_comment', 'poll_expiry', 'poll_shared'];
+      if (pollRelatedTypes.includes(notification.type) && notification.relatedPoll && notification.relatedPoll._id) {
+        const pollId = notification.relatedPoll._id;
+        navigate(`/feed?pollId=${pollId}`);
+      }
+
+      // Close dropdown after navigation
+      setIsOpen(false);
+    } catch (err) {
+      console.error('Notification click navigation error:', err);
+    }
+  };
+
   const displayedNotifications = showAll ? notifications : notifications.slice(0, 5);
 
   return (
@@ -171,7 +199,7 @@ const NotificationsBell = () => {
                   <div
                     key={notification._id}
                     className={`p-4 hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}
-                    onClick={() => !notification.isRead && markAsRead(notification._id)}
+                    onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start gap-3">
                       <div className="mt-1">{getNotificationIcon(notification.type)}</div>
