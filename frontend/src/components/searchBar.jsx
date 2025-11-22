@@ -113,8 +113,8 @@ const SearchBar = () => {
             <div className="py-2">
               {searchResults.map((user) => (
                 <Link
-                  key={user._id}
-                  to={`/profile/${user._id}`}
+                  key={user.id}
+                  to={`/profile/${user.id}`}
                   onClick={handleResultClick}
                   className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
                 >
