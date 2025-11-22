@@ -41,8 +41,8 @@ const Profile = () => {
   const currentUser = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
 
-  // Check if viewing own profile or someone else's
-  const isOwnProfile = !userId || String(userId) === String(currentUser?._id);
+  // Fix: convert both IDs to string for proper comparison
+  const isOwnProfile = !userId || (currentUser && userId.toString() === currentUser._id.toString());
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
   useEffect(() => {
@@ -62,13 +62,11 @@ const Profile = () => {
       if (response.data.success) {
         setProfileUser(response.data.user);
       } else {
-        setProfileUser(null);
         toast.error('User not found');
       }
     } catch (error) {
-      console.error('Failed to load user profile:', error);
-      setProfileUser(null);
       toast.error('Failed to load user profile');
+      console.error(error);
     } finally {
       setProfileLoading(false);
     }
@@ -154,7 +152,7 @@ const Profile = () => {
   if (!displayUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <p>User not found or failed to load</p>
+        <p>User not found</p>
       </div>
     );
   }
@@ -273,7 +271,6 @@ const Profile = () => {
                   </div>
                 ) : (
                   <div className="space-y-6">
-                    {/* Username Edit */}
                     <div className="space-y-2">
                       <Label htmlFor="username">Username</Label>
                       <Input
@@ -292,7 +289,6 @@ const Profile = () => {
                       )}
                     </div>
 
-                    {/* Avatar Selection */}
                     <div className="space-y-2">
                       <Label>Choose Avatar</Label>
                       <div className="grid grid-cols-6 gap-3">
@@ -320,7 +316,6 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     <div className="flex gap-2">
                       <Button onClick={handleSave} disabled={loading || usernameError}>
                         {loading ? 'Saving...' : 'Save Changes'}
