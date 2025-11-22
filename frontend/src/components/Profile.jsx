@@ -177,16 +177,16 @@ const Profile = () => {
                   {isOwnProfile ? 'Manage your username and avatar' : 'View user information'}
                 </CardDescription>
               </div>
-              {!isOwnProfile && (
+              
                 <Button 
                   variant="outline" 
-                  onClick={() => navigate('/profile')}
+                  onClick={() => navigate('/feed')}
                   className="flex items-center gap-2"
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Back to My Profile
+                  Back to My feed
                 </Button>
-              )}
+              
             </div>
           </CardHeader>
           <CardContent className="space-y-6">
