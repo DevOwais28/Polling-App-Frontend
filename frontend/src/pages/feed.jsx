@@ -68,25 +68,25 @@ const Feed = () => {
     setPolls(prev => prev.map(p => (p._id === updated._id ? updated : p)))
   }
 
-  // Scroll to poll if ?poll=ID exists
+  // Detect poll ID from query (for notifications)
   useEffect(() => {
     const params = new URLSearchParams(location.search)
     const pollId = params.get('poll')
     if (pollId) setHighlightPollId(pollId)
   }, [location.search])
 
+  // Scroll to poll once polls are loaded
   useEffect(() => {
-    if (highlightPollId && polls.length) {
+    if (highlightPollId && !loading && polls.length) {
       const el = document.getElementById(highlightPollId)
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // Optional: temporary highlight
         el.classList.add('ring-2', 'ring-blue-400')
         setTimeout(() => el.classList.remove('ring-2', 'ring-blue-400'), 3000)
       }
       setHighlightPollId(null)
     }
-  }, [highlightPollId, polls])
+  }, [highlightPollId, polls, loading])
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,7 +94,7 @@ const Feed = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          
+
           {/* Left Sidebar */}
           <div className="hidden md:block md:col-span-1">
             <div className="sticky top-6 space-y-4">
@@ -106,7 +106,7 @@ const Feed = () => {
 
           {/* Feed */}
           <div className="md:col-span-2 space-y-4">
-            
+
             {/* Create Poll */}
             <div className="bg-white rounded-xl border p-4 sm:p-6 shadow-sm">
               <CreatePoll onPollCreated={handlePollCreated} />
@@ -142,7 +142,7 @@ const Feed = () => {
                 {polls.map((poll, i) => (
                   <div
                     key={poll?._id || i}
-                    id={poll?._id} // <--- add this for scroll
+                    id={poll?._id} // <--- needed for scroll
                     className="bg-white rounded-xl border shadow-sm hover:shadow-md transition"
                   >
                     <PollCard poll={poll} onVote={fetchPolls} onPollUpdated={handlePollUpdated} />
