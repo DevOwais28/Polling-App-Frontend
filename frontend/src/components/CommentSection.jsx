@@ -94,7 +94,9 @@ const CommentSection = ({ pollId }) => {
   };
 
   const handleDeleteComment = (commentId) => {
-    setComments(comments.filter(comment => comment._id !== commentId));
+    setComments(prevComments =>
+      prevComments.filter(comment => comment._id !== commentId)
+    );
   };
 
   return (
