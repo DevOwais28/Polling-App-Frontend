@@ -27,6 +27,7 @@ const avatarOptions = [
 
 const Profile = () => {
   const { userId } = useParams();
+  console.log("userId of clicked account",userId);
   const navigate = useNavigate();
   const [isEditing, setIsEditing] = useState(false);
   const [username, setUsername] = useState('');
