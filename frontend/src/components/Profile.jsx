@@ -35,13 +35,12 @@ const Profile = () => {
   const [profileLoading, setProfileLoading] = useState(false);
   const [privatePollsLoading, setPrivatePollsLoading] = useState(false);
   const [usernameError, setUsernameError] = useState('');
-  const [profileUser, setProfileUser] = useState(null);
+  const [profileUser, setProfileUser] = useState(undefined); // undefined = not fetched yet
   const [privatePolls, setPrivatePolls] = useState([]);
-  
+
   const currentUser = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
 
-  // Fix: convert both IDs to string for proper comparison
   const isOwnProfile = !userId || (currentUser && userId.toString() === currentUser._id.toString());
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
@@ -62,9 +61,11 @@ const Profile = () => {
       if (response.data.success) {
         setProfileUser(response.data.user);
       } else {
+        setProfileUser(null); // User not found
         toast.error('User not found');
       }
     } catch (error) {
+      setProfileUser(null);
       toast.error('Failed to load user profile');
       console.error(error);
     } finally {
@@ -133,6 +134,7 @@ const Profile = () => {
     setIsEditing(false);
   };
 
+  // --- Loading & Not Found states ---
   if (!currentUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -141,7 +143,7 @@ const Profile = () => {
     );
   }
 
-  if (profileLoading) {
+  if (!isOwnProfile && profileUser === undefined) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
@@ -149,13 +151,15 @@ const Profile = () => {
     );
   }
 
-  if (!displayUser) {
+  if (!isOwnProfile && profileUser === null) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <p>User not found</p>
       </div>
     );
   }
+
+  if (!displayUser) return null;
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -165,7 +169,7 @@ const Profile = () => {
             <div className="flex items-center justify-between">
               <div>
                 <CardTitle>
-                  {isOwnProfile ? 'Profile Settings' : `${displayUser.name || displayUser.username}'s Profile`}
+                  {isOwnProfile ? 'Profile Settings' : `${displayUser.name || displayUser.username || 'User'}'s Profile`}
                 </CardTitle>
                 <CardDescription>
                   {isOwnProfile ? 'Manage your username and avatar' : 'View user information'}
@@ -187,17 +191,17 @@ const Profile = () => {
             {/* Profile Display */}
             <div className="flex items-center space-x-4">
               <Avatar className="w-20 h-20">
-                <AvatarImage src={displayUser.avatar} alt={displayUser.username || displayUser.name} />
+                <AvatarImage src={displayUser.avatar} alt={displayUser.username || displayUser.name || 'User'} />
                 <AvatarFallback>{displayUser.username?.charAt(0) || displayUser.name?.charAt(0) || 'U'}</AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-lg font-semibold">{displayUser.name || displayUser.username}</h3>
-                <p className="text-sm text-gray-500">@{displayUser.username}</p>
-                <p className="text-sm text-gray-500">{displayUser.email}</p>
+                <h3 className="text-lg font-semibold">{displayUser.name || displayUser.username || 'Unknown'}</h3>
+                <p className="text-sm text-gray-500">@{displayUser.username || 'unknown'}</p>
+                <p className="text-sm text-gray-500">{displayUser.email || 'No email'}</p>
               </div>
             </div>
 
-            {/* Private Polls Section - Only for own profile */}
+            {/* Private Polls Section */}
             {isOwnProfile && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2 border-t pt-6">
@@ -259,7 +263,7 @@ const Profile = () => {
               </div>
             )}
 
-            {/* Edit Section - Only for own profile */}
+            {/* Edit Section */}
             {isOwnProfile && (
               <>
                 {!isEditing ? (
