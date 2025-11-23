@@ -1,345 +1,425 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, Edit, Save, X, ArrowLeft, Lock, Eye } from "lucide-react";
-import { apiRequest } from "@/api";
-import { toast } from "sonner";
-import useAppStore from "@/store";
+import { User } from "../models/user.js";
+import { Poll } from "../models/poll.js";
+import { Vote } from "../models/vote.js";
+import Comment from "../models/comment.js";
+import bcrypt from "bcrypt";
+import { createNotification } from "./notification.js";
 
-const avatarOptions = [
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=1",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=2",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=3",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=4",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=5",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=6",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=7",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=8",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=9",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=10",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=11",
-  "https://api.dicebear.com/7.x/avataaars/svg?seed=12"
-];
-
-const Profile = () => {
-  const { userId } = useParams();
-  console.log("userId of clicked account",userId);
-  const navigate = useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
-  const [username, setUsername] = useState('');
-  const [selectedAvatar, setSelectedAvatar] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [profileLoading, setProfileLoading] = useState(false);
-  const [privatePollsLoading, setPrivatePollsLoading] = useState(false);
-  const [usernameError, setUsernameError] = useState('');
-  const [profileUser, setProfileUser] = useState(undefined); // undefined = not fetched yet
-  const [privatePolls, setPrivatePolls] = useState([]);
-
-  const currentUser = useAppStore((state) => state.user);
-  const setUser = useAppStore((state) => state.setUser);
-
-  const isOwnProfile = !userId || (currentUser && userId?.toString() === currentUser?._id?.toString());
-  const displayUser = isOwnProfile ? currentUser : profileUser;
-
-  useEffect(() => {
-    if (isOwnProfile && currentUser) {
-      setUsername(currentUser.username || '');
-      setSelectedAvatar(currentUser.avatar || avatarOptions[0]);
-      fetchPrivatePolls(currentUser._id);
-    } else if (!isOwnProfile && userId) {
-      fetchUserProfile(userId);
-    }
-  }, [isOwnProfile, currentUser, userId]);
-
-  const fetchUserProfile = async (userId) => {
-    setProfileLoading(true);
-    try {
-      const response = await apiRequest('GET', `/profile/${userId}`);
-      if (response.data.success) {
-        setProfileUser(response.data.user);
-        console.log("profileUser",profileUser);
-      } else {
-        setProfileUser(null); // User not found
-        toast.error('User not found');
-      }
-    } catch (error) {
-      setProfileUser(null);
-      toast.error('Failed to load user profile');
-      console.error(error);
-    } finally {
-      setProfileLoading(false);
-    }
-  };
-
-  const fetchPrivatePolls = async (userId) => {
-    setPrivatePollsLoading(true);
-    try {
-      const response = await apiRequest('GET', `/profile/${userId}/private-polls`);
-      if (response.data.success) {
-        setPrivatePolls(response.data.polls);
-      }
-    } catch (error) {
-      console.error('Failed to load private polls:', error);
-    } finally {
-      setPrivatePollsLoading(false);
-    }
-  };
-
-  const validateUsername = (value) => {
-    if (value.length < 3) {
-      setUsernameError('Username must be at least 3 characters');
-      return false;
-    }
-    if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
-      setUsernameError('Username can only contain letters, numbers, underscores, and hyphens');
-      return false;
-    }
-    setUsernameError('');
-    return true;
-  };
-
-  const handleSave = async () => {
-    if (!validateUsername(username)) return;
-
-    setLoading(true);
-    try {
-      const response = await apiRequest('PUT', 'profile/update', {
-        username,
-        avatar: selectedAvatar
+// Setup profile on first login
+export const setupProfile = async (req, res) => {
+  try {
+    const { username, avatar } = req.body;
+    
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated"
       });
-
-      if (response.data.success) {
-        toast.success('Profile updated successfully!');
-        setUser(response.data.user);
-        setIsEditing(false);
-      }
-    } catch (error) {
-      console.error('Profile update error:', error);
-      if (error.response?.data?.message?.includes('taken')) {
-        setUsernameError('Username already taken');
-      } else {
-        toast.error(error.response?.data?.message || 'Failed to update profile');
-      }
-    } finally {
-      setLoading(false);
     }
-  };
+    
+    const userId = req.user.id;
+    
+    // Validate username
+    if (!username || username.length < 3) {
+      return res.status(400).json({
+        success: false,
+        message: "Username must be at least 3 characters long"
+      });
+    }
 
-  const handleCancel = () => {
-    setUsername(currentUser.username || '');
-    setSelectedAvatar(currentUser.avatar || avatarOptions[0]);
-    setUsernameError('');
-    setIsEditing(false);
-  };
+    // Check if username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser && existingUser._id.toString() !== userId.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: "Username already taken"
+      });
+    }
 
-  // --- Loading & Not Found states ---
-  if (!currentUser) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Please login to view profiles</p>
-      </div>
+    // Update user profile
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        username,
+        avatar: avatar || undefined,
+        isProfileComplete: true
+      },
+      { new: true }
     );
+
+    res.json({
+      success: true,
+      message: "Profile setup completed successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        isProfileComplete: user.isProfileComplete
+      }
+    });
+  } catch (error) {
+    console.error("Profile setup error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during profile setup"
+    });
   }
-
-  if (!isOwnProfile && profileUser === undefined) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
-      </div>
-    );
-  }
-
-  if (!isOwnProfile && profileUser === null) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>User not found</p>
-      </div>
-    );
-  }
-
-  if (!displayUser) return null;
-
-  return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-2xl mx-auto px-4">
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>
-                  {isOwnProfile ? 'Profile Settings' : `${displayUser.name || displayUser.username || 'User'}'s Profile`}
-                </CardTitle>
-                <CardDescription>
-                  {isOwnProfile ? 'Manage your username and avatar' : 'View user information'}
-                </CardDescription>
-              </div>
-              
-                <Button 
-                  variant="outline" 
-                  onClick={() => navigate('/feed')}
-                  className="flex items-center gap-2"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back to My feed
-                </Button>
-              
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Profile Display */}
-            <div className="flex items-center space-x-4">
-              <Avatar className="w-20 h-20">
-                <AvatarImage src={displayUser.avatar} alt={displayUser.username || displayUser.name || 'User'} />
-                <AvatarFallback>{displayUser.username?.charAt(0) || displayUser.name?.charAt(0) || 'U'}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="text-lg font-semibold">{displayUser.name || displayUser.username || 'Unknown'}</h3>
-                <p className="text-sm text-gray-500">@{displayUser.username || 'unknown'}</p>
-                <p className="text-sm text-gray-500">{displayUser.email || 'No email'}</p>
-              </div>
-            </div>
-
-            {/* Private Polls Section */}
-            {isOwnProfile && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 border-t pt-6">
-                  <Lock className="w-4 h-4 text-gray-600" />
-                  <h4 className="text-lg font-semibold">My Private Polls</h4>
-                </div>
-                
-                {privatePollsLoading ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
-                  </div>
-                ) : privatePolls.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Lock className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">You haven't created any private polls yet</p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {privatePolls.map((poll) => (
-                      <Card key={poll._id} className="border-l-4 border-l-blue-500">
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <h5 className="font-medium text-gray-900 mb-2">{poll.description}</h5>
-                              <div className="space-y-1">
-                                {poll.options?.slice(0, 3).map((option, index) => (
-                                  <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
-                                    <span>{option.text}</span>
-                                  </div>
-                                ))}
-                                {poll.options?.length > 3 && (
-                                  <p className="text-xs text-gray-500">+{poll.options.length - 3} more options</p>
-                                )}
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
-                              <Eye className="w-3 h-3" />
-                              <span>Private</span>
-                            </div>
-                          </div>
-                          <div className="mt-3 flex items-center justify-between">
-                            <p className="text-xs text-gray-500">
-                              Created {new Date(poll.createdAt).toLocaleDateString()}
-                            </p>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => navigate(`/poll/${poll._id}`)}
-                            >
-                              View Poll
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Edit Section */}
-            {isOwnProfile && (
-              <>
-                {!isEditing ? (
-                  <div className="flex justify-end">
-                    <Button onClick={() => setIsEditing(true)} variant="outline">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit Profile
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="space-y-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="username">Username</Label>
-                      <Input
-                        id="username"
-                        value={username}
-                        onChange={(e) => {
-                          setUsername(e.target.value);
-                          validateUsername(e.target.value);
-                        }}
-                        placeholder="Enter username"
-                        maxLength={20}
-                        className={usernameError ? "border-red-500" : ""}
-                      />
-                      {usernameError && (
-                        <p className="text-sm text-red-500">{usernameError}</p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label>Choose Avatar</Label>
-                      <div className="grid grid-cols-6 gap-3">
-                        {avatarOptions.map((avatar, index) => (
-                          <div
-                            key={index}
-                            className={`relative cursor-pointer rounded-lg border-2 transition-all ${
-                              selectedAvatar === avatar
-                                ? 'border-blue-500 ring-2 ring-blue-500 ring-offset-2'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                            onClick={() => setSelectedAvatar(avatar)}
-                          >
-                            <Avatar className="w-12 h-12">
-                              <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
-                              <AvatarFallback>{index + 1}</AvatarFallback>
-                            </Avatar>
-                            {selectedAvatar === avatar && (
-                              <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
-                                <Check className="w-3 h-3 text-white" />
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Button onClick={handleSave} disabled={loading || usernameError}>
-                        {loading ? 'Saving...' : 'Save Changes'}
-                      </Button>
-                      <Button variant="outline" onClick={handleCancel}>
-                        <X className="w-4 h-4 mr-2" />
-                        Cancel
-                      </Button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    </div>
-  );
 };
 
-export default Profile;
+// Check if profile is complete
+export const checkProfileComplete = async (req, res) => {
+  try {
+    // User object:
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated"
+      });
+    }
+    
+    const user = await User.findById(req.user.id);
+    
+    res.json({
+      success: true,
+      isProfileComplete: user.isProfileComplete,
+      username: user.username,
+      avatar: user.avatar,
+      _id: user._id
+    });
+  } catch (error) {
+    console.error("Check profile error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+  }
+};
+
+// Get current user's profile data
+
+// Update profile
+export const updateProfile = async (req, res) => {
+  try {
+    const { username, avatar } = req.body;
+    
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated"
+      });
+    }
+    
+    const userId = req.user.id;
+
+    if (username) {
+      const existingUser = await User.findOne({ username });
+      if (existingUser && existingUser._id.toString() !== userId.toString()) {
+        return res.status(400).json({
+          success: false,
+          message: "Username already taken"
+        });
+      }
+    }
+
+    const user = await User.findByIdAndUpdate(
+      userId,
+      {
+        ...(username && { username }),
+        ...(avatar && { avatar }),
+        isProfileComplete: true
+      },
+      { new: true }
+    );
+
+    res.json({
+      success: true,
+      message: "Profile updated successfully",
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        isProfileComplete: user.isProfileComplete
+      }
+    });
+  } catch (error) {
+    console.error("Profile update error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during profile update"
+    });
+  }
+};
+
+export const changePassword = async(req,res) =>{
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.user.id;
+
+    // Find user and include password
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Check current password
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password is incorrect"
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedNewPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update password
+    await User.findByIdAndUpdate(userId, { password: hashedNewPassword });
+
+    res.json({
+      success: true,
+      message: "Password changed successfully"
+    });
+     
+  } catch (error) {
+    console.error("Change password error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during password change"
+    });
+  }
+};
+
+export const updateAccountSettings = async(req,res) =>{
+  try {
+    const { email, name, username } = req.body;
+    const userId = req.user.id;
+
+    // Check if username is already taken by another user
+    if (username) {
+      const existingUser = await User.findOne({ 
+        username: username, 
+        _id: { $ne: userId } 
+      });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Username is already taken"
+        });
+      }
+    }
+
+    // Check if email is already taken by another user
+    if (email) {
+      const existingUser = await User.findOne({ 
+        email: email, 
+        _id: { $ne: userId } 
+      });
+      if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "Email is already taken"
+        });
+      }
+    }
+
+    // Update user settings
+    const updatedUser = await User.findByIdAndUpdate(
+      userId, 
+      { 
+        ...(email && { email }),
+        ...(name && { name }),
+        ...(username && { username })
+      },
+      { new: true, runValidators: true }
+    ).select('-password');
+
+    res.json({
+      success: true,
+      message: "Account settings updated successfully",
+      user: updatedUser
+    });
+     
+  } catch (error) {
+    console.error("Update account settings error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during settings update"
+    });
+  }
+};
+
+export const deleteAccount = async(req,res) =>{
+  try {
+    const { password } = req.body;
+    const userId = req.user.id;
+
+    // Find user and include password
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Skip password verification for Google-authenticated users
+    if (!user.googleId) {
+      // Only verify password for non-Google users
+      if (!password) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is required for account deletion"
+        });
+      }
+      
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (!isPasswordValid) {
+        return res.status(400).json({
+          success: false,
+          message: "Password is incorrect"
+        });
+      }
+    }
+
+    // Delete user's polls
+    await Poll.deleteMany({ createdBy: userId });
+    
+    // Delete user's votes
+    await Vote.deleteMany({ userId: userId });
+    
+    // Delete user's comments
+    await Comment.deleteMany({ userId: userId });
+
+    // Delete user
+    await User.findByIdAndDelete(userId);
+
+    res.json({
+      success: true,
+      message: "Account deleted successfully"
+    });
+     
+  } catch (error) {
+    console.error("Delete account error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during account deletion"
+    });
+  }
+};
+
+export const getProfilesBySearch = async(req,res) =>{
+  try {
+    const {searchTerm} = req.params
+    const users = await User.find({
+      $or: [
+        { username: { $regex: searchTerm, $options: "i" } },
+        { name: { $regex: searchTerm, $options: "i" } }
+      ]
+    }).limit(20) // Limit results to prevent too many responses
+    
+    res.json({
+      success: true,
+      users
+    })
+     
+  } catch (error) {
+    console.error("Get profiles by search error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during profile retrieval"
+    });
+  }
+}
+
+export const getUserProfile = async(req,res) =>{
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.user.id;
+    
+    const user = await User.findById(userId).select('-password');
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found"
+      });
+    }
+
+    // Create notification for profile visit (if not visiting own profile)
+    if (userId !== currentUserId?.toString()) {
+      try {
+        // req.user only has id/email from JWT, so load visitor's display name from DB
+        const visitor = await User.findById(currentUserId).select('name username');
+        const visitorName = visitor?.name || visitor?.username || 'Someone';
+
+        await createNotification({
+          recipient: userId,
+          sender: currentUserId,
+          type: 'profile_visit',
+          title: 'Profile Visit',
+          message: `${visitorName} visited your profile`,
+        });
+      } catch (notificationError) {
+        console.error('Failed to create notification:', notificationError);
+        // Don't fail the profile view if notification fails
+      }
+    }
+
+    res.json({
+      success: true,
+      user
+    });
+     
+  } catch (error) {
+    console.error("Get user profile error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during profile retrieval"
+    });
+  }
+}
+
+export const getUserPrivatePolls = async(req,res) =>{
+  try {
+    const { userId } = req.params;
+    const currentUserId = req.user.id;
+    
+    // Only allow users to see their own private polls
+    if (userId !== currentUserId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only view your own private polls"
+      });
+    }
+    
+    const { Poll } = await import("../models/poll.js");
+    
+    const privatePolls = await Poll.find({ 
+      createdBy: userId,
+      isPrivate: true 
+    })
+    .populate('createdBy', 'username name avatar')
+    .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      polls: privatePolls
+    });
+     
+  } catch (error) {
+    console.error("Get user private polls error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Server error during private polls retrieval"
+    });
+  }
+}
