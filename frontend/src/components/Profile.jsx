@@ -42,19 +42,39 @@ const Profile = () => {
   const currentUser = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
 
-  const currentUserId = currentUser?._id || null;
+  const currentUserId = currentUser?._id || currentUser?.id || null;
   const isOwnProfile = !userId || (currentUserId && userId === currentUserId);
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
   useEffect(() => {
-    if (isOwnProfile && currentUserId) {
-      setUsername(currentUser.username || '');
-      setSelectedAvatar(currentUser.avatar || avatarOptions[0]);
-      fetchPrivatePolls(currentUserId);
-    } else if (!isOwnProfile && userId) {
-      fetchUserProfile(userId);
-    }
-  }, [isOwnProfile, currentUserId, currentUser, userId]);
+    const initProfile = async () => {
+      // Own profile
+      if (isOwnProfile && currentUserId) {
+        // If username is missing in store (e.g. older login), fetch full profile once
+        if (!currentUser?.username) {
+          try {
+            const response = await apiRequest('GET', `/profile/${currentUserId}`);
+            if (response.data?.success && response.data.user) {
+              setUser(response.data.user);
+            }
+          } catch (err) {
+            console.error('Failed to hydrate current user profile:', err);
+          }
+        }
+
+        setUsername(currentUser?.username || '');
+        setSelectedAvatar(currentUser?.avatar || avatarOptions[0]);
+        await fetchPrivatePolls(currentUserId);
+      }
+
+      // Someone else's profile
+      if (!isOwnProfile && userId) {
+        await fetchUserProfile(userId);
+      }
+    };
+
+    void initProfile();
+  }, [isOwnProfile, currentUserId, currentUser?.username, currentUser?.avatar, userId]);
 
   const fetchUserProfile = async (userId) => {
     setProfileLoading(true);
@@ -168,7 +188,7 @@ const Profile = () => {
   }
 
   if (!displayUser) return null;
-  console.log("user :",displayUser)
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-2xl mx-auto px-4">
