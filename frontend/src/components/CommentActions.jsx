@@ -12,10 +12,11 @@ export function CommentActions({ comment, onUpdate, onDelete, isOwner }) {
   const [editedContent, setEditedContent] = useState(comment.text || comment.content || "");
   const [isLoading, setIsLoading] = useState(false);
   const currentUser = useAppStore(state => state.user);
-  const ownerId = comment.userId?._id || comment.userId; // populated user or raw id
-  const computedIsOwner = currentUser?._id && ownerId
-    ? currentUser._id.toString() === ownerId.toString()
-    : false;
+  const ownerIdRaw = comment.userId?._id || comment.userId; // populated user or raw id
+  const ownerIdStr = ownerIdRaw != null ? String(ownerIdRaw) : null;
+  const currentUserIdStr = currentUser?._id != null ? String(currentUser._id) : null;
+  const computedIsOwner =
+    currentUserIdStr && ownerIdStr ? currentUserIdStr === ownerIdStr : false;
   const isCurrentUserComment =
     typeof isOwner === 'boolean' ? isOwner : computedIsOwner;
   
