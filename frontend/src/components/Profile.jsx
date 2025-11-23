@@ -42,7 +42,7 @@ const Profile = () => {
   const currentUser = useAppStore((state) => state.user);
   const setUser = useAppStore((state) => state.setUser);
 
-  const isOwnProfile = !userId || (currentUser && userId.toString() === currentUser._id.toString());
+  const isOwnProfile = !userId || (currentUser && userId?.toString() === currentUser?._id?.toString());
   const displayUser = isOwnProfile ? currentUser : profileUser;
 
   useEffect(() => {
