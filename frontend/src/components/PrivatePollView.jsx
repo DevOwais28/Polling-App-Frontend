@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Lock, ArrowLeft, Users, BarChart3 } from 'lucide-react';
 import { Button } from "@/components/ui/button";
@@ -10,67 +10,56 @@ import { io } from 'socket.io-client';
 import { ShareButton } from './sharebutton';
 
 const PrivatePollView = () => {
-  const { pollId } = useParams()
-  const navigate = useNavigate()
+  const { pollId } = useParams();
+  const navigate = useNavigate();
+
   const [poll, setPoll] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [hasVoted, setHasVoted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [socket, setSocket] = useState(null);
   const [results, setResults] = useState([]);
   const [totalVotes, setTotalVotes] = useState(0);
-  const [user, setUser] = useState(null);
-  // Fetch poll data
+  const [socket, setSocket] = useState(null);
+
+  // Redirect if no private key
+  useEffect(() => {
+    const secretKey = sessionStorage.getItem(`poll_${pollId}_key`);
+    if (!secretKey) {
+      toast.error("You must enter the secret key first");
+      navigate("/join-private");
+    }
+  }, [pollId, navigate]);
+
+  // Fetch user profile
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const profileResponse = await apiRequest("GET", "/profile/check");
+        setUser(profileResponse.data);
+      } catch (error) {
+        toast.error('Failed to fetch user');
+      }
+    };
+    fetchUser();
+  }, []);
+
+  // Fetch poll using private key
   useEffect(() => {
     const fetchPoll = async () => {
+      setIsLoading(true);
       try {
-        const response = await apiRequest("GET", `/polls/${pollId}`);
+        const secretKey = sessionStorage.getItem(`poll_${pollId}_key`);
+        if (!secretKey) return;
+
+        const response = await apiRequest("POST", `/polls/${pollId}/access`, { secretKey });
         if (response.data?.poll) {
           setPoll(response.data.poll);
-          
-          // Fetch user profile
-          try {
-            const profileResponse = await apiRequest("GET", "/profile/check");
-            setUser(profileResponse.data);
-            
-            // Fetch votes
-            const votesResponse = await apiRequest("GET", `/votes/vote/${pollId}`);
-            const votes = votesResponse.data.votes || [];
-
-            // Check if user has already voted
-            const userVote = votes.find(vote => 
-              vote.user === profileResponse.data._id || 
-              vote.userId === profileResponse.data._id
-            );
-
-            if (userVote) {
-              setHasVoted(true);
-              setSelectedOption(userVote.optionIndex);
-            }
-
-            // Calculate initial results
-            const totalVotes = votes.length;
-            const calculatedResults = response.data.poll.options.map((option, index) => {
-              const optionVotes = votes.filter(v => v.optionIndex === index).length;
-              return {
-                option,
-                votes: optionVotes,
-                percentage: totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0
-              }
-            });
-
-            setResults(calculatedResults);
-            setTotalVotes(totalVotes);
-            
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-            toast.error('Failed to load user data');
-          }
+          fetchVotes(response.data.poll);
         }
       } catch (error) {
-        console.error('Error fetching poll:', error);
-        toast.error("Failed to load poll");
-        navigate('/feed');
+        toast.error("Failed to load poll or invalid key");
+        navigate("/join-private");
       } finally {
         setIsLoading(false);
       }
@@ -79,54 +68,50 @@ const PrivatePollView = () => {
     fetchPoll();
   }, [pollId, navigate]);
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const profileResponse = await apiRequest("GET", "/profile/check")
-        setUser(profileResponse.data)
-      } catch (error) {
-      toast.error('Failed to fetch user');
+  // Fetch votes
+  const fetchVotes = async (pollData) => {
+    try {
+      const votesResponse = await apiRequest("GET", `/votes/vote/${pollId}`);
+      const votes = votesResponse.data.votes || [];
+      const total = votes.length;
+
+      const userVote = votes.find(v => v.user === user._id || v.userId === user._id);
+      if (userVote) {
+        setHasVoted(true);
+        setSelectedOption(userVote.optionIndex);
       }
+
+      const calculatedResults = pollData.options.map((option, index) => {
+        const optionVotes = votes.filter(v => v.optionIndex === index).length;
+        return {
+          option,
+          votes: optionVotes,
+          percentage: total > 0 ? (optionVotes / total) * 100 : 0
+        };
+      });
+
+      setResults(calculatedResults);
+      setTotalVotes(total);
+    } catch (error) {
+      console.error('Error fetching votes:', error);
     }
+  };
 
-    fetchUser()
-  }, [])
-
+  // Setup WebSocket
   useEffect(() => {
-    if (!pollId || !user?._id) return;
+    if (!pollId || !user?._id || !poll) return;
 
     const socketBaseUrl = import.meta.env.VITE_API_URL || "https://polling-app-production-142d.up.railway.app";
-
     const newSocket = io(socketBaseUrl, {
       withCredentials: true,
       transports: ['websocket'],
-      reconnection: true,
-      reconnectionAttempts: 5,
-      reconnectionDelay: 1000,
-      query: { 
-        pollId, 
-        userId: user._id
-      }
-    });
-    
-    // Initializing WebSocket connection...
-
-    newSocket.on('connect', () => {
-      // Connected to WebSocket server
+      query: { pollId, userId: user._id }
     });
 
     newSocket.on('vote', (data) => {
-      // Received vote update:
       if (data.pollId === pollId) {
-        const updatedResults = data.results.map(result => ({
-          ...result,
-          percentage: Math.round(result.percentage)
-        }));
-        
-        // Updating results with:
-        setResults(updatedResults);
+        setResults(data.results.map(r => ({ ...r, percentage: Math.round(r.percentage) })));
         setTotalVotes(data.totalVotes);
-        
         if (data.voterId === user._id) {
           setHasVoted(true);
           setSelectedOption(data.voterOptionIndex);
@@ -134,171 +119,64 @@ const PrivatePollView = () => {
       }
     });
 
-    newSocket.on('initialResults', (data) => {
-      // Received initial results:
-      if (data.pollId === pollId) {
-        setResults(data.results.map(r => ({
-          ...r,
-          percentage: Math.round(r.percentage)
-        })));
-        setTotalVotes(data.totalVotes);
-        // Only ever turn hasVoted on; don't flip it back to false once true
-        setHasVoted(prev => prev || !!data.hasVoted);
-      }
-    });
-
-    newSocket.on('error', (error) => {
-      console.error('WebSocket error:', error);
-      toast.error(error.message || 'Connection error');
-    });
-
-    newSocket.on('voteError', (error) => {
-      console.error('Vote error:', error);
-      if (error.message === 'You already voted on this poll') {
-        setHasVoted(true);
-      }
-      toast.error(error.message || 'Failed to submit vote');
-    });
-
-    newSocket.on('disconnect', () => {
-      // Disconnected from WebSocket server
-    });
-
     setSocket(newSocket);
+    return () => newSocket.disconnect();
+  }, [pollId, user?._id, poll]);
 
-    return () => {
-      // Cleaning up WebSocket connection
-      if (newSocket) {
-        newSocket.off('vote');
-        newSocket.off('initialResults');
-        newSocket.off('error');
-        newSocket.off('voteError');
-        newSocket.off('disconnect');
-        newSocket.close();
-      }
-    };
-  }, [pollId, user?._id]);
-
-  const fetchResults = async () => {
-    try {
-      const votesResponse = await apiRequest("GET", `/votes/vote/${pollId}`)
-      const votes = votesResponse.data.votes || []
-      const totalVotes = votes.length
-      
-      const profileResponse = await apiRequest("GET", "/profile/check")
-      const currentUserId = profileResponse.data?._id
-      const userVote = votes.find(vote => vote.user === currentUserId || vote.userId === currentUserId)
-      
-      if (userVote) {
-        setHasVoted(true)
-        setSelectedOption(userVote.optionIndex)
-      }
-      
-      const calculatedResults = poll.options.map((option, index) => {
-        const optionVotes = votes.filter(vote => vote.optionIndex === index).length
-        return {
-          option,
-          votes: optionVotes,
-          percentage: totalVotes > 0 ? (optionVotes / totalVotes) * 100 : 0
-        }
-      })
-      
-      setResults(calculatedResults)
-      setTotalVotes(totalVotes)
-    } catch (error) {
-      console.error('Error fetching results:', error)
-    }
-  }
-
+  // Vote handler
   const handleVote = () => {
-  if (selectedOption === null) {
-    toast.error("Please select an option to vote");
-    return;
-  }
+    if (selectedOption === null) return toast.error("Please select an option");
+    if (hasVoted) return toast.error("You already voted");
 
-  if (hasVoted) {
-    toast.error("You have already voted on this poll");
-    return;
-  }
+    const newTotalVotes = totalVotes + 1;
+    const updatedResults = results.map((result, index) => {
+      if (index === selectedOption) {
+        const newVotes = result.votes + 1;
+        return { ...result, votes: newVotes, percentage: (newVotes / newTotalVotes) * 100 };
+      }
+      return { ...result, percentage: (result.votes / newTotalVotes) * 100 };
+    });
 
-  // Optimistic UI update (optional, will be confirmed by socket)
-  const newTotalVotes = totalVotes + 1;
-  const updatedResults = results.map((result, index) => {
-    if (index === selectedOption) {
-      const newVotes = result.votes + 1;
-      return {
-        ...result,
-        votes: newVotes,
-        percentage: (newVotes / newTotalVotes) * 100
-      };
-    }
-    return {
-      ...result,
-      percentage: (result.votes / newTotalVotes) * 100
-    };
-  });
+    setResults(updatedResults);
+    setTotalVotes(newTotalVotes);
+    setHasVoted(true);
 
-  setResults(updatedResults);
-  setTotalVotes(newTotalVotes);
-  setHasVoted(true);
+    if (socket) socket.emit('vote', { optionIndex: selectedOption });
+    toast.success("Vote submitted!");
+  };
 
-  // Emit vote to server
-  if (socket) {
-    socket.emit('vote', { optionIndex: selectedOption });
-  } else {
-    toast.error("Connection lost. Vote could not be sent.");
-    // Optional: reset UI if vote cannot be sent
-    setHasVoted(false);
-  }
-
-  toast.success("Vote submitted!");
-};
-
+  // Back button handler
   const handleGoBack = () => {
-    navigate('/feed')
-  }
+    // Remove the private key
+    sessionStorage.removeItem(`poll_${pollId}_key`);
+    navigate('/feed');
+  };
 
   if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-2 text-gray-600">Loading private poll...</p>
-        </div>
-      </div>
-    )
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+    </div>;
   }
 
   if (!poll) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <CardContent className="text-center py-8">
-            <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900">Poll Not Found</h3>
-            <p className="text-gray-600 mt-2">This private poll may not exist or you may not have access.</p>
-            <Button onClick={handleGoBack} className="mt-4">
-              Go Back
-            </Button>
-          </CardContent>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+        <Card className="w-full max-w-md p-6 text-center">
+          <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold">Poll Not Found</h3>
+          <p className="text-gray-600 mt-2">This poll may not exist or you may not have access.</p>
+          <Button onClick={handleGoBack} className="mt-4">Go Back</Button>
         </Card>
       </div>
-    )
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-2xl mx-auto">
-        <div className="mb-6">
-          <Button 
-            variant="ghost" 
-            onClick={handleGoBack}
-            className="text-gray-600 hover:text-gray-900"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Feed
-          </Button>
-        </div>
+        <Button variant="ghost" onClick={handleGoBack} className="mb-4">
+          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Feed
+        </Button>
 
         <Card>
           <CardHeader>
@@ -311,8 +189,7 @@ const PrivatePollView = () => {
             </div>
             <CardTitle className="text-xl">{poll.description}</CardTitle>
             <CardDescription className="flex items-center gap-2">
-              <Users className="h-4 w-4" />
-              Exclusive access poll
+              <Users className="h-4 w-4" /> Exclusive access poll
             </CardDescription>
           </CardHeader>
 
@@ -324,34 +201,21 @@ const PrivatePollView = () => {
                   <div
                     key={index}
                     className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedOption === index
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                      selectedOption === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
                     }`}
                     onClick={() => setSelectedOption(index)}
                   >
                     <div className="flex items-center gap-3">
                       <div className={`w-4 h-4 rounded-full border-2 ${
-                        selectedOption === index
-                          ? 'border-blue-500 bg-blue-500'
-                          : 'border-gray-300'
+                        selectedOption === index ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
                       }`}>
-                        {selectedOption === index && (
-                          <div className="w-full h-full rounded-full bg-white scale-50"></div>
-                        )}
+                        {selectedOption === index && <div className="w-full h-full rounded-full bg-white scale-50"></div>}
                       </div>
                       <span className="flex-1">{option}</span>
                     </div>
                   </div>
                 ))}
-
-                <Button 
-                  onClick={handleVote}
-                  disabled={selectedOption === null}
-                  className="w-full mt-4"
-                >
-                  Submit Vote
-                </Button>
+                <Button onClick={handleVote} disabled={selectedOption === null} className="w-full mt-4">Submit Vote</Button>
               </div>
             ) : (
               <div className="space-y-4">
@@ -359,31 +223,22 @@ const PrivatePollView = () => {
                   <BarChart3 className="h-5 w-5 text-green-600" />
                   <h4 className="font-medium text-green-600">Live Results</h4>
                 </div>
-                
                 {results.map((result, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span className="font-medium">{result.option}</span>
-                      <span className="text-gray-600">
-                        {result.votes} votes ({result.percentage.toFixed(1)}%)
-                      </span>
+                      <span className="text-gray-600">{result.votes} votes ({result.percentage.toFixed(1)}%)</span>
                     </div>
                     <Progress value={result.percentage} className="h-2" />
                   </div>
                 ))}
-
-                <div className="pt-4 border-t">
-                  <p className="text-sm text-gray-600 text-center">
-                    Thank you for voting in this private WePollin poll!
-                  </p>
-                </div>
               </div>
             )}
           </CardContent>
         </Card>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default PrivatePollView
+export default PrivatePollView;
