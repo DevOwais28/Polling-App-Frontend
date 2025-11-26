@@ -27,17 +27,17 @@ const JoinPrivatePoll = () => {
       const response = await apiRequest("POST", "/polls/join-private", { privateKey });
 
       if (response.data?.poll) {
-        // Store the key in sessionStorage for this poll
+        // Store the key in sessionStorage
         sessionStorage.setItem(`poll_${response.data.poll._id}_key`, privateKey);
 
-        toast("Successfully joined private poll!");
+        toast.success("Successfully joined private poll!");
         navigate(`/poll/${response.data.poll._id}`);
       } else {
-        toast("Invalid or expired access key");
+        toast.error("Invalid or expired access key");
       }
     } catch (error) {
       console.error('Error joining private poll:', error);
-      toast(error.response?.data?.message || "Failed to join private poll");
+      toast.error(error.response?.data?.message || "Failed to join private poll");
     } finally {
       setIsLoading(false);
     }
