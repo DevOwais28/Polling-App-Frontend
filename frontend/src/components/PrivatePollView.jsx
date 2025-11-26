@@ -22,7 +22,7 @@ const PrivatePollView = () => {
   const [totalVotes, setTotalVotes] = useState(0);
   const [socket, setSocket] = useState(null);
 
-  // Redirect if no private key
+  // Redirect if no private key in sessionStorage
   useEffect(() => {
     const secretKey = sessionStorage.getItem(`poll_${pollId}_key`);
     if (!secretKey) {
@@ -44,27 +44,26 @@ const PrivatePollView = () => {
     fetchUser();
   }, []);
 
-  // Fetch poll using private key
+  // Fetch poll data (normal GET, no key POST)
   useEffect(() => {
     const fetchPoll = async () => {
       setIsLoading(true);
       try {
-        const secretKey = sessionStorage.getItem(`poll_${pollId}_key`);
-        if (!secretKey) return;
-
-        const response = await apiRequest("POST", `/polls/${pollId}/access`, { secretKey });
+        const response = await apiRequest("GET", `/polls/${pollId}`);
         if (response.data?.poll) {
           setPoll(response.data.poll);
           fetchVotes(response.data.poll);
+        } else {
+          toast.error("Poll not found");
+          navigate("/join-private");
         }
       } catch (error) {
-        toast.error("Failed to load poll or invalid key");
+        toast.error("Failed to load poll");
         navigate("/join-private");
       } finally {
         setIsLoading(false);
       }
     };
-
     fetchPoll();
   }, [pollId, navigate]);
 
@@ -75,7 +74,7 @@ const PrivatePollView = () => {
       const votes = votesResponse.data.votes || [];
       const total = votes.length;
 
-      const userVote = votes.find(v => v.user === user._id || v.userId === user._id);
+      const userVote = votes.find(v => v.user === user?._id || v.userId === user?._id);
       if (userVote) {
         setHasVoted(true);
         setSelectedOption(userVote.optionIndex);
@@ -97,7 +96,7 @@ const PrivatePollView = () => {
     }
   };
 
-  // Setup WebSocket
+  // WebSocket setup
   useEffect(() => {
     if (!pollId || !user?._id || !poll) return;
 
@@ -123,7 +122,6 @@ const PrivatePollView = () => {
     return () => newSocket.disconnect();
   }, [pollId, user?._id, poll]);
 
-  // Vote handler
   const handleVote = () => {
     if (selectedOption === null) return toast.error("Please select an option");
     if (hasVoted) return toast.error("You already voted");
@@ -145,31 +143,23 @@ const PrivatePollView = () => {
     toast.success("Vote submitted!");
   };
 
-  // Back button handler
   const handleGoBack = () => {
-    // Remove the private key
     sessionStorage.removeItem(`poll_${pollId}_key`);
     navigate('/feed');
   };
 
-  if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-    </div>;
-  }
+  if (isLoading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div></div>;
 
-  if (!poll) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-        <Card className="w-full max-w-md p-6 text-center">
-          <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold">Poll Not Found</h3>
-          <p className="text-gray-600 mt-2">This poll may not exist or you may not have access.</p>
-          <Button onClick={handleGoBack} className="mt-4">Go Back</Button>
-        </Card>
-      </div>
-    );
-  }
+  if (!poll) return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Card className="w-full max-w-md p-6 text-center">
+        <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-lg font-semibold">Poll Not Found</h3>
+        <p className="text-gray-600 mt-2">This poll may not exist or you may not have access.</p>
+        <Button onClick={handleGoBack} className="mt-4">Go Back</Button>
+      </Card>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
