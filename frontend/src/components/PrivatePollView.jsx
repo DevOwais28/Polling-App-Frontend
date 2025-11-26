@@ -22,7 +22,7 @@ const PrivatePollView = () => {
   const [totalVotes, setTotalVotes] = useState(0);
   const [socket, setSocket] = useState(null);
 
-  // Redirect if no private key in sessionStorage
+  // Redirect if no private key
   useEffect(() => {
     const secretKey = sessionStorage.getItem(`poll_${pollId}_key`);
     if (!secretKey) {
@@ -44,7 +44,7 @@ const PrivatePollView = () => {
     fetchUser();
   }, []);
 
-  // Fetch poll data (normal GET, no key POST)
+  // Fetch poll data
   useEffect(() => {
     const fetchPoll = async () => {
       setIsLoading(true);
@@ -65,7 +65,7 @@ const PrivatePollView = () => {
       }
     };
     fetchPoll();
-  }, [pollId, navigate]);
+  }, [pollId, navigate, user]);
 
   // Fetch votes
   const fetchVotes = async (pollData) => {
@@ -74,10 +74,14 @@ const PrivatePollView = () => {
       const votes = votesResponse.data.votes || [];
       const total = votes.length;
 
+      // Check vote of current user only
       const userVote = votes.find(v => v.user === user?._id || v.userId === user?._id);
       if (userVote) {
         setHasVoted(true);
         setSelectedOption(userVote.optionIndex);
+      } else {
+        setHasVoted(false);
+        setSelectedOption(null);
       }
 
       const calculatedResults = pollData.options.map((option, index) => {
@@ -111,6 +115,7 @@ const PrivatePollView = () => {
       if (data.pollId === pollId) {
         setResults(data.results.map(r => ({ ...r, percentage: Math.round(r.percentage) })));
         setTotalVotes(data.totalVotes);
+
         if (data.voterId === user._id) {
           setHasVoted(true);
           setSelectedOption(data.voterOptionIndex);
@@ -122,6 +127,7 @@ const PrivatePollView = () => {
     return () => newSocket.disconnect();
   }, [pollId, user?._id, poll]);
 
+  // Vote handler
   const handleVote = () => {
     if (selectedOption === null) return toast.error("Please select an option");
     if (hasVoted) return toast.error("You already voted");
