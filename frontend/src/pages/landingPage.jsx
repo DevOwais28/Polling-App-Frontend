@@ -3,6 +3,7 @@ import { ChevronRight, Users, BarChart3, Zap, Shield, Sparkles } from 'lucide-re
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import useAppStore from '@/store';
+import Chatbot from '@/components/Chatbot';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -121,13 +122,13 @@ const LandingPage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-white border border-blue-100 hover:shadow-lg transition-shadow">
               <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Zap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Lightning Fast</h3>
-              <p className="text-gray-600">Create polls in seconds with our intuitive interface</p>
+              <p className="text-gray-600">Create and share polls in seconds with our intuitive interface</p>
             </div>
 
             <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-purple-50 to-white border border-purple-100 hover:shadow-lg transition-shadow">
@@ -135,7 +136,7 @@ const LandingPage = () => {
                 <BarChart3 className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Real-time Analytics</h3>
-              <p className="text-gray-600">Get instant insights with beautiful charts and graphs</p>
+              <p className="text-gray-600">Get instant insights with beautiful, interactive charts</p>
             </div>
 
             <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-pink-50 to-white border border-pink-100 hover:shadow-lg transition-shadow">
@@ -143,7 +144,43 @@ const LandingPage = () => {
                 <Shield className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">Secure & Private</h3>
-              <p className="text-gray-600">Your data is encrypted and never shared with third parties</p>
+              <p className="text-gray-600">End-to-end encryption ensures your data remains secure</p>
+            </div>
+
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-green-50 to-white border border-green-100 hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-gradient-to-r from-green-600 to-green-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <Users className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Team Collaboration</h3>
+              <p className="text-gray-600">Work together with your team on polls and surveys</p>
+            </div>
+
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-yellow-50 to-white border border-yellow-100 hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-gradient-to-r from-yellow-600 to-yellow-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white">
+                  <path d="M12 2v4"/>
+                  <path d="m16.24 7.76 2.83-2.83"/>
+                  <path d="M18 12h4"/>
+                  <path d="m16.24 16.24 2.83 2.83"/>
+                  <path d="M12 18v4"/>
+                  <path d="m7.76 16.24-2.83 2.83"/>
+                  <path d="M6 12H2"/>
+                  <path d="m7.76 7.76-2.83-2.83"/>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Custom Branding</h3>
+              <p className="text-gray-600">Add your logo and brand colors to your polls</p>
+            </div>
+
+            <div className="text-center p-8 rounded-2xl bg-gradient-to-br from-indigo-50 to-white border border-indigo-100 hover:shadow-lg transition-shadow">
+              <div className="w-16 h-16 bg-gradient-to-r from-indigo-600 to-indigo-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-8 h-8 text-white">
+                  <path d="M12 20h9"/>
+                  <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">Advanced Controls</h3>
+              <p className="text-gray-600">Fine-tune your polls with advanced settings</p>
             </div>
           </div>
         </div>
@@ -169,21 +206,60 @@ const LandingPage = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-50 py-12">
+      <footer className="bg-gray-900 text-white py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-white" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="col-span-1">
+              <div className="flex items-center space-x-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-500 rounded-lg flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-xl font-bold text-white">WePollin</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">WePollin</span>
+              <p className="text-gray-400 text-sm">
+                Empowering decisions through beautiful, intuitive polling solutions.
+              </p>
             </div>
-            <p className="text-gray-600">
-              2024 WePollin. Making polling beautiful and effortless.
+            
+            <div>
+              <h3 className="text-white font-semibold mb-4">Features</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Real-time Analytics</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Team Collaboration</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Custom Branding</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Advanced Security</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-white font-semibold mb-4">Resources</h3>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Documentation</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">API Reference</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Tutorials</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="text-white font-semibold mb-4">Contact</h3>
+              <ul className="space-y-2">
+                <li className="text-gray-400">Email: ra920453@gmail.com</li>
+                <li className="text-gray-400">Developer: Owais Ahmed</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="border-t border-gray-800 mt-12 pt-8 text-center">
+            <p className="text-gray-400 text-sm">
+              &copy; {new Date().getFullYear()} WePollin. All rights reserved.
+              <span className="block mt-2 text-gray-500 text-xs">
+                Crafted with ❤️ by Owais Ahmed
+              </span>
             </p>
           </div>
         </div>
       </footer>
+      <Chatbot />
     </div>
   );
 };
