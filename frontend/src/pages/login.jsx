@@ -71,7 +71,7 @@ export default function Login() {
 
     async function continueWithGoogle() {
         // This will be handled by the AuthCallback component
-        window.location.href = `${import.meta.env.VITE_API_URL || 'https://polling-app-production-142d.up.railway.app'}/api/auth/google`;
+        window.location.href = `${import.meta.env.VITE_API_URL || 'https://polling-app-production-855d.up.railway.app'}/api/auth/google`;
     }
 
     // Google OAuth handling is now in AuthCallback component
@@ -213,5 +213,6 @@ export default function Login() {
         </div>
     )
 }
+
 
 
