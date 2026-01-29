@@ -104,7 +104,7 @@ const PrivatePollView = () => {
   useEffect(() => {
     if (!pollId || !user?._id || !poll) return;
 
-    const socketBaseUrl = import.meta.env.VITE_API_URL || "https://polling-app-production-855d.up.railway.app";
+    const socketBaseUrl = import.meta.env.VITE_API_URL || "https://polling-app-production-98f9.up.railway.app";
     const newSocket = io(socketBaseUrl, {
       withCredentials: true,
       transports: ['websocket'],
