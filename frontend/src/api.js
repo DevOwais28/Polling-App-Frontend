@@ -2,7 +2,7 @@ import axios from "axios";
 import useAppStore from "./store";
 
 const api = axios.create({
-    baseURL: "https://polling-app-production-855d.up.railway.app/api/",
+    baseURL: "https://polling-app-production-98f9.up.railway.app/api/",
 });
 
 api.interceptors.request.use((config) => {
