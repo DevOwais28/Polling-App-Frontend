@@ -68,6 +68,7 @@ export default function Login() {
             }
         },
     });
+
     async function continueWithGoogle() {
         // This will be handled by the AuthCallback component
         window.location.href = `${import.meta.env.VITE_API_URL || 'https://polling-app-production-a6f5.up.railway.app'}/api/auth/google`;
@@ -91,20 +92,25 @@ export default function Login() {
                             <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#1c1917' }}>
                                 <BarChart3 className="w-5 h-5" style={{ color: '#fbbf24' }} />
                             </div>
-                            <span className="text-xl font-bold syne" style={{ color: '#1c1917' }}>
+                            <span className="text-xl font-bold syne hidden sm:inline" style={{ color: '#1c1917' }}>
                                 WePollin
+                            </span>
+                            <span className="text-lg font-bold syne sm:hidden" style={{ color: '#1c1917' }}>
+                                WP
                             </span>
                         </Link>
                         <div className="flex items-center space-x-4">
-                            <Link to="/signup" className="text-sm font-medium transition-colors hover:text-amber-600" style={{ color: '#57534e' }}>
+                            <Link to="/signup" className="text-sm font-medium transition-colors hover:text-amber-600 hidden sm:inline" style={{ color: '#57534e' }}>
                                 Sign Up
                             </Link>
                             <Link to="/signup">
                                 <Button 
-                                    className="syne font-semibold text-sm"
-                                    style={{ background: '#1c1917', color: '#fff', borderRadius: '12px', padding: '8px 18px' }}
+                                    className="syne font-semibold text-xs sm:text-sm whitespace-nowrap"
+                                    style={{ background: '#1c1917', color: '#fff', borderRadius: '12px', padding: '6px 10px' }}
                                 >
-                                    Get started <ArrowUpRight className="w-4 h-4 ml-1" />
+                                    <span className="hidden sm:inline">Get started</span>
+                                    <span className="sm:hidden">Start</span>
+                                    <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                                 </Button>
                             </Link>
                         </div>

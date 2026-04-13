@@ -49,10 +49,10 @@ const Chatbot = () => {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-50">
+    <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[110]">
       {isOpen ? (
         <div 
-          className="w-80 h-[500px] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+          className="w-[calc(100vw-32px)] max-w-80 sm:w-80 h-[400px] sm:h-[500px] rounded-xl shadow-2xl flex flex-col overflow-hidden"
           style={{ background: '#fff', border: '1px solid #e7e5e4', fontFamily: "'DM Sans', sans-serif" }}
         >
           <style>{`
@@ -131,10 +131,10 @@ const Chatbot = () => {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none"
+          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none"
           style={{ background: '#1c1917', color: '#fbbf24' }}
         >
-          <MessageCircle className="w-6 h-6" />
+          <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         </button>
       )}
     </div>

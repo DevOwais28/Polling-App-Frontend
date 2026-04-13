@@ -343,15 +343,56 @@ const LandingPage = () => {
         }
         .nav-link:hover { background: var(--paper-2); color: var(--ink); }
 
+        .hero-h1 { font-size: clamp(2rem, 5vw, 3.8rem); }
+        .stat-number { font-size: clamp(1.5rem, 4vw, 2rem); }
+        .cta-heading { font-size: clamp(1.75rem, 6vw, 2.8rem); }
+        .nav-brand-desktop { display: inline; }
+        .nav-brand-mobile { display: none; }
+        .nav-login { font-size: 13px; padding: 4px 8px; }
+        .nav-cta { padding: 6px 12px; font-size: 13px; }
         /* responsive */
         @media (max-width: 640px) {
-          .hero-h1 { font-size: 2.6rem !important; }
-          .stats-grid { grid-template-columns: repeat(3,1fr) !important; gap: 10px !important; }
+          .hero-h1 { font-size: clamp(1.75rem, 8vw, 2.2rem) !important; line-height: 1.15 !important; }
+          .hero-subtitle { font-size: 1rem !important; }
+          .hero-flex { flex-direction: column !important; gap: 32px !important; }
+          .hero-left { max-width: 100% !important; }
+          .hero-cta { flex-direction: column !important; width: 100%; }
+          .hero-cta button { width: 100%; justify-content: center; }
+          .stats-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .feat-grid { grid-template-columns: 1fr !important; }
           .steps-grid { grid-template-columns: 1fr !important; }
+          .step-connector { display: none !important; }
+          .section-title { font-size: 1.75rem !important; }
+          .section-subtitle { font-size: 0.9rem !important; }
+          .cta-heading { font-size: 1.75rem !important; }
+          .cta-band { padding: 40px 20px !important; }
+          .nav-pill { width: calc(100% - 20px) !important; }
+          .nav-links { display: none !important; }
+          .nav-mobile-menu { display: flex !important; }
+          section { padding-left: 16px !important; padding-right: 16px !important; }
+          .how-header { flex-direction: column !important; align-items: flex-start !important; gap: 12px !important; }
+          .stat-card { padding: 16px !important; }
+          .stat-card > div:first-child { font-size: 1.5rem !important; }
+          .feat-card { padding: 24px !important; }
+          footer > div > div:first-child { grid-template-columns: 1fr !important; gap: 32px !important; }
+          .nav-brand-desktop { display: none !important; }
+          .nav-brand-mobile { display: inline !important; }
+          .nav-login { font-size: 12px !important; padding: 4px 6px !important; }
+          .nav-cta { font-size: 12px !important; padding: 6px 10px !important; }
+          .nav-pill { padding: 0 8px 0 12px !important; }
+          .cta-heading { font-size: clamp(1.5rem, 7vw, 1.75rem) !important; }
+          .cta-band { padding: 40px 20px !important; }
+          .cta-btn { width: 100% !important; justify-content: center !important; padding: 14px 20px !important; font-size: 14px !important; }
         }
         @media (min-width: 641px) and (max-width: 1024px) {
           .feat-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .hero-h1 { font-size: 3rem !important; }
+          .steps-grid { grid-template-columns: repeat(2,1fr) !important; }
+          .step-connector:nth-child(2) { display: none !important; }
+          .stats-grid { grid-template-columns: repeat(3,1fr) !important; }
+        }
+        @media (max-width: 1024px) {
+          .hero-poll-card { display: none !important; }
         }
       `}</style>
 
@@ -361,26 +402,30 @@ const LandingPage = () => {
         <nav className="nav-pill" style={{
           position: 'fixed', top: 16, left: '50%', transform: 'translateX(-50%)',
           width: 'calc(100% - 32px)', maxWidth: 1100, zIndex: 100,
-          borderRadius: 16, padding: '0 20px',
+          borderRadius: 16, padding: '0 12px 0 16px',
         }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 56 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div className="nav-inner" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', height: 56, gap: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
               <div style={{
                 width: 32, height: 32,
                 background: 'var(--ink)',
                 borderRadius: 8,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
+                flexShrink: 0,
               }}>
                 <BarChart3 style={{ width: 16, height: 16, color: '#fbbf24' }} />
               </div>
-              <span className="syne" style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)' }}>
+              <span className="syne nav-brand-desktop" style={{ fontSize: 18, fontWeight: 700, color: 'var(--ink)', whiteSpace: 'nowrap' }}>
                 WePollin
               </span>
+              <span className="syne nav-brand-mobile" style={{ fontSize: 16, fontWeight: 700, color: 'var(--ink)' }}>
+                WP
+              </span>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <button className="nav-link" onClick={() => navigate('/login')}>Log in</button>
-              <button className="btn-primary" style={{ padding: '8px 18px', fontSize: 14 }} onClick={() => navigate('/signup')}>
-                Get started <ArrowUpRight style={{ width: 14, height: 14 }} />
+            <div className="nav-buttons" style={{ display: 'flex', alignItems: 'center', gap: 6, flexShrink: 0 }}>
+              <button className="nav-link nav-login" onClick={() => navigate('/login')}>Log in</button>
+              <button className="btn-primary nav-cta" style={{ padding: '6px 12px', fontSize: 13, whiteSpace: 'nowrap' }} onClick={() => navigate('/signup')}>
+                Get started <ArrowUpRight style={{ width: 12, height: 12, flexShrink: 0 }} />
               </button>
             </div>
           </div>
@@ -399,25 +444,26 @@ const LandingPage = () => {
           }} />
 
           <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 48 }}>
+            <div className="hero-flex" style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 48, minWidth: 0 }}>
               {/* left */}
-              <div style={{ flex: '1 1 420px', minWidth: 0 }}>
+              <div className="hero-left" style={{ flex: '1 1 420px', minWidth: 0, maxWidth: '100%' }}>
                 <div className="badge" style={{ marginBottom: 24 }}>
                   <Sparkles style={{ width: 12, height: 12 }} />
                   Create polls in seconds
                 </div>
 
                 <h1 className="syne hero-h1" style={{
-                  fontSize: '3.8rem', fontWeight: 800, lineHeight: 1.08,
+                  fontWeight: 800, lineHeight: 1.08,
                   color: 'var(--ink)', marginBottom: 20, letterSpacing: '-0.03em',
+                  overflowWrap: 'break-word', wordBreak: 'break-word',
                 }}>
-                  Polls that<br />
+                  Polls that <span className="hidden sm:inline"><br /></span>
                   <span style={{
                     WebkitTextStroke: '2px var(--ink)',
                     WebkitTextFillColor: 'transparent',
                     color: 'transparent',
                   }}>
-                    actually&nbsp;matter
+                    actually matter
                   </span>
                 </h1>
 
@@ -425,7 +471,7 @@ const LandingPage = () => {
                   Engage your audience with beautiful, interactive polls. Get real-time insights and make data-driven decisions — effortlessly.
                 </p>
 
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
+                <div className="hero-cta" style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
                   <button className="btn-primary" onClick={() => navigate('/signup')}>
                     Start for free <ChevronRight style={{ width: 16, height: 16 }} />
                   </button>
@@ -440,7 +486,7 @@ const LandingPage = () => {
               </div>
 
               {/* right — live poll preview */}
-              <div style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'center' }}>
+              <div className="hero-poll-card" style={{ flex: '1 1 300px', display: 'flex', justifyContent: 'center' }}>
                 <div style={{ position: 'relative' }}>
                   <div style={{
                     position: 'absolute', inset: -20,
@@ -454,15 +500,15 @@ const LandingPage = () => {
 
             {/* stats row */}
             <div className="stats-grid" style={{
-              display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginTop: 64,
+              display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginTop: 64, minWidth: 0, overflow: 'hidden',
             }}>
               {[
                 { val: 10000, suffix: '+', label: 'Active Polls' },
                 { val: 50000, suffix: '+', label: 'Total Votes' },
                 { val: 5000, suffix: '+', label: 'Happy Users' },
               ].map((s, i) => (
-                <div key={i} className="stat-card">
-                  <div className="syne" style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--ink)', lineHeight: 1 }}>
+                <div key={i} className="stat-card" style={{ minWidth: 0, overflow: 'hidden' }}>
+                  <div className="syne stat-number" style={{ fontWeight: 800, color: 'var(--ink)', lineHeight: 1 }}>
                     <Counter end={s.val} suffix={s.suffix} />
                   </div>
                   <div style={{ fontSize: 13, color: 'var(--ink-3)', marginTop: 6, fontWeight: 500 }}>{s.label}</div>
@@ -476,11 +522,11 @@ const LandingPage = () => {
 
         {/* ── HOW IT WORKS ── */}
         <section style={{ padding: '96px 24px', maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ marginBottom: 56, display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 16, justifyContent: 'space-between' }}>
+          <div className="how-header" style={{ marginBottom: 56, display: 'flex', flexWrap: 'wrap', alignItems: 'flex-end', gap: 16, justifyContent: 'space-between' }}>
             <div>
               <p className="badge" style={{ marginBottom: 12, display: 'inline-flex' }}>How it works</p>
-              <h2 className="syne" style={{ fontSize: '2.4rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, margin: 0 }}>
-                Three steps to<br />insight
+              <h2 className="syne section-title" style={{ fontSize: '2.4rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, margin: 0 }}>
+                Three steps to <span className="hidden sm:inline"><br /></span>insight
               </h2>
             </div>
             <p style={{ maxWidth: 320, color: 'var(--ink-2)', fontSize: 15, lineHeight: 1.65, margin: 0 }}>
@@ -504,7 +550,7 @@ const LandingPage = () => {
                 </h3>
                 <p style={{ fontSize: 14, color: 'var(--ink-2)', lineHeight: 1.65, margin: 0 }}>{s.desc}</p>
                 {i < steps.length - 1 && (
-                  <div style={{
+                  <div className="step-connector" style={{
                     position: 'absolute', top: 38, right: -12,
                     width: 24, height: 24, borderRadius: '50%',
                     background: 'var(--amber-light)',
@@ -525,8 +571,8 @@ const LandingPage = () => {
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: 56 }}>
               <p className="badge" style={{ marginBottom: 14, display: 'inline-flex' }}>Features</p>
-              <h2 className="syne" style={{ fontSize: '2.4rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
-                Everything you need,<br />nothing you don't
+              <h2 className="syne section-title" style={{ fontSize: '2.4rem', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 14 }}>
+                Everything you need, <span className="hidden sm:inline"><br /></span>nothing you don't
               </h2>
               <p style={{ color: 'var(--ink-2)', fontSize: 16, maxWidth: 500, margin: '0 auto', lineHeight: 1.65 }}>
                 Powerful features that make polling feel effortless.
@@ -565,17 +611,18 @@ const LandingPage = () => {
               }}>
                 Ready to start?
               </p>
-              <h2 className="syne" style={{
-                fontSize: '2.8rem', fontWeight: 800, color: '#fff',
+              <h2 className="syne cta-heading" style={{
+                fontWeight: 800, color: '#fff',
                 letterSpacing: '-0.03em', lineHeight: 1.1, marginBottom: 16,
+                overflowWrap: 'break-word', wordBreak: 'break-word',
               }}>
-                Your first poll is<br />30 seconds away
+                Your first poll is <span className="hidden sm:inline"><br /></span>30 seconds away
               </h2>
               <p style={{ color: '#a8a29e', fontSize: 16, marginBottom: 32, maxWidth: 440, margin: '0 auto 32px' }}>
                 Join thousands of creators who trust WePollin to understand their audiences better.
               </p>
               <button
-                className="btn-primary"
+                className="btn-primary cta-btn"
                 style={{ background: '#f59e0b', color: '#1c1917', boxShadow: '0 8px 32px #f59e0b44' }}
                 onClick={() => navigate('/signup')}
               >

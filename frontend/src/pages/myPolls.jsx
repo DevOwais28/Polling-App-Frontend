@@ -17,9 +17,9 @@ const MyPollsPage = () => {
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Left Sidebar */}
-          <div className="lg:col-span-1">
+        <div className="flex flex-col md:grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {/* Left Sidebar - Hidden on mobile */}
+          <div className="hidden md:block md:col-span-1">
             <div className="sticky top-6 space-y-4">
               <div className="rounded-xl p-4" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
                 <AppSidebar />
@@ -27,15 +27,15 @@ const MyPollsPage = () => {
             </div>
           </div>
 
-          {/* Main Content */}
-          <div className="lg:col-span-2">
-            <div className="rounded-xl p-6 shadow-sm" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
+          {/* Main Content - Full width on mobile, 2 cols on md/lg */}
+          <div className="md:col-span-2">
+            <div className="rounded-xl p-4 sm:p-6 shadow-sm" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
               <MyPolls />
             </div>
           </div>
 
-          {/* Right Sidebar - Empty for now or can add future features */}
-          <div className="lg:col-span-1">
+          {/* Right Sidebar - Hidden on mobile and md, visible on lg+ */}
+          <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-6 space-y-4">
               {/* Future widgets can go here */}
             </div>

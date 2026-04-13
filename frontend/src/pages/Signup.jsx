@@ -129,20 +129,25 @@ export default function Signup() {
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#1c1917' }}>
                 <BarChart3 className="w-5 h-5" style={{ color: '#fbbf24' }} />
               </div>
-              <span className="text-xl font-bold syne" style={{ color: '#1c1917' }}>
+              <span className="text-xl font-bold syne hidden sm:inline" style={{ color: '#1c1917' }}>
                 WePollin
+              </span>
+              <span className="text-lg font-bold syne sm:hidden" style={{ color: '#1c1917' }}>
+                WP
               </span>
             </Link>
             <div className="flex items-center space-x-4">
-              <Link to="/login" className="text-sm font-medium transition-colors hover:text-amber-600" style={{ color: '#57534e' }}>
+              <Link to="/login" className="text-sm font-medium transition-colors hover:text-amber-600 hidden sm:inline" style={{ color: '#57534e' }}>
                 Sign In
               </Link>
               <Link to="/login">
                 <Button 
-                  className="syne font-semibold text-sm"
-                  style={{ background: '#1c1917', color: '#fff', borderRadius: '12px', padding: '8px 18px' }}
+                  className="syne font-semibold text-xs sm:text-sm whitespace-nowrap"
+                  style={{ background: '#1c1917', color: '#fff', borderRadius: '12px', padding: '6px 10px' }}
                 >
-                  Log in <ArrowUpRight className="w-4 h-4 ml-1" />
+                  <span className="hidden sm:inline">Log in</span>
+                  <span className="sm:hidden">Login</span>
+                  <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                 </Button>
               </Link>
             </div>

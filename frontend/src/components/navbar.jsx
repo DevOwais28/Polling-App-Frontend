@@ -40,10 +40,16 @@ const Navbar = () => {
                 <BarChart3 className="w-5 h-5" style={{ color: '#fbbf24' }} />
               </div>
               <span 
-                className="text-xl font-bold syne"
+                className="text-xl font-bold syne hidden sm:inline"
                 style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
               >
                 WePollin
+              </span>
+              <span 
+                className="text-lg font-bold syne sm:hidden"
+                style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+              >
+                WP
               </span>
             </Link>
             {isFeed && (
@@ -71,7 +77,7 @@ const Navbar = () => {
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      className="text-sm font-medium hover:text-amber-600"
+                      className="text-sm font-medium hover:text-amber-600 hidden sm:inline-flex"
                       style={{ color: '#57534e' }}
                       onClick={() => {
                         useAppStore.getState().clearUser();
@@ -87,17 +93,19 @@ const Navbar = () => {
                   <>
                     <Link 
                       to="/login" 
-                      className="text-sm font-medium transition-colors hover:text-amber-600"
+                      className="text-sm font-medium transition-colors hover:text-amber-600 hidden sm:inline"
                       style={{ color: '#57534e' }}
                     >
                       Sign In
                     </Link>
                     <Link to="/signup">
                       <Button 
-                        className="syne font-semibold text-sm text-white hover:opacity-90 transition-opacity"
-                        style={{ background: '#1c1917', borderRadius: '12px', padding: '8px 18px' }}
+                        className="syne font-semibold text-xs sm:text-sm text-white hover:opacity-90 transition-opacity whitespace-nowrap"
+                        style={{ background: '#1c1917', borderRadius: '12px', padding: '6px 10px' }}
                       >
-                        Get Started <ArrowUpRight className="w-4 h-4 ml-1" />
+                        <span className="hidden sm:inline">Get Started</span>
+                        <span className="sm:hidden">Start</span>
+                        <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                       </Button>
                     </Link>
                   </>
