@@ -68,7 +68,6 @@ export default function Login() {
             }
         },
     });
-
     async function continueWithGoogle() {
         // This will be handled by the AuthCallback component
         window.location.href = `${import.meta.env.VITE_API_URL || 'https://polling-app-production-a6f5.up.railway.app'}/api/auth/google`;
