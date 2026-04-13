@@ -51,12 +51,21 @@ const Chatbot = () => {
   return (
     <div className="fixed bottom-8 right-8 z-50">
       {isOpen ? (
-        <div className="w-80 h-[500px] bg-white rounded-xl shadow-2xl flex flex-col border border-gray-200 overflow-hidden">
+        <div 
+          className="w-80 h-[500px] rounded-xl shadow-2xl flex flex-col overflow-hidden"
+          style={{ background: '#fff', border: '1px solid #e7e5e4', fontFamily: "'DM Sans', sans-serif" }}
+        >
+          <style>{`
+            @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+          `}</style>
           {/* Header */}
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-4 flex justify-between items-center">
+          <div 
+            className="text-white p-4 flex justify-between items-center"
+            style={{ background: '#1c1917' }}
+          >
             <div className="flex items-center space-x-2">
-              <Bot className="w-5 h-5" />
-              <span className="font-semibold">WePollin Assistant</span>
+              <Bot className="w-5 h-5" style={{ color: '#fbbf24' }} />
+              <span className="font-semibold syne" style={{ fontFamily: "'Syne', sans-serif" }}>WePollin Assistant</span>
             </div>
             <button 
               onClick={() => setIsOpen(false)}
@@ -67,7 +76,7 @@ const Chatbot = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 p-4 overflow-y-auto bg-gray-50">
+          <div className="flex-1 p-4 overflow-y-auto" style={{ background: '#fafaf9' }}>
             <div className="space-y-4">
               {messages.map((message, index) => (
                 <div 
@@ -75,16 +84,18 @@ const Chatbot = () => {
                   className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div 
-                    className={`max-w-[80%] p-3 rounded-lg ${
-                      message.sender === 'user' 
-                        ? 'bg-blue-600 text-white rounded-br-none' 
-                        : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none'
-                    }`}
+                    className="max-w-[80%] p-3 rounded-lg"
+                    style={{
+                      background: message.sender === 'user' ? '#1c1917' : '#fff',
+                      color: message.sender === 'user' ? '#fff' : '#1c1917',
+                      border: message.sender === 'user' ? 'none' : '1px solid #e7e5e4',
+                      borderRadius: message.sender === 'user' ? '12px 12px 4px 12px' : '12px 12px 12px 4px'
+                    }}
                   >
                     <div className="flex items-start space-x-2">
-                      {message.sender === 'bot' && <Bot className="w-4 h-4 mt-0.5 flex-shrink-0 text-blue-600" />}
+                      {message.sender === 'bot' && <Bot className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#f59e0b' }} />}
                       <p className="text-sm">{message.text}</p>
-                      {message.sender === 'user' && <User className="w-4 h-4 mt-0.5 flex-shrink-0 text-white" />}
+                      {message.sender === 'user' && <User className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#fbbf24' }} />}
                     </div>
                   </div>
                 </div>
@@ -94,18 +105,23 @@ const Chatbot = () => {
           </div>
 
           {/* Input */}
-          <form onSubmit={handleSendMessage} className="p-3 border-t border-gray-200 bg-white">
+          <form onSubmit={handleSendMessage} className="p-3 border-t bg-white" style={{ borderColor: '#e7e5e4' }}>
             <div className="flex items-center space-x-2">
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 placeholder="Type your message..."
-                className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="flex-1 px-4 py-2 text-sm rounded-full focus:outline-none"
+                style={{ 
+                  border: '1px solid #e7e5e4',
+                  fontFamily: "'DM Sans', sans-serif"
+                }}
               />
               <button 
                 type="submit"
-                className="p-2 text-white bg-blue-600 rounded-full hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="p-2 rounded-full transition-all duration-200 hover:opacity-90"
+                style={{ background: '#1c1917', color: '#fff' }}
               >
                 <Send className="w-5 h-5" />
               </button>
@@ -115,7 +131,8 @@ const Chatbot = () => {
       ) : (
         <button
           onClick={() => setIsOpen(true)}
-          className="w-14 h-14 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          className="w-14 h-14 rounded-full shadow-lg flex items-center justify-center hover:shadow-xl transition-all duration-300 transform hover:scale-105 focus:outline-none"
+          style={{ background: '#1c1917', color: '#fbbf24' }}
         >
           <MessageCircle className="w-6 h-6" />
         </button>

@@ -165,24 +165,33 @@ const Profile = () => {
   // --- Loading & Not Found states ---
   if (!currentUser) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>Please login to view profiles</p>
+      <div 
+        className="flex items-center justify-center min-h-screen"
+        style={{ background: '#fafaf9' }}
+      >
+        <p style={{ color: '#57534e', fontFamily: "'DM Sans', sans-serif" }}>Please login to view profiles</p>
       </div>
     );
   }
 
   if (!isOwnProfile && profileUser === undefined) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+      <div 
+        className="flex items-center justify-center min-h-screen"
+        style={{ background: '#fafaf9' }}
+      >
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-t-transparent" style={{ borderColor: '#f59e0b' }}></div>
       </div>
     );
   }
 
   if (!isOwnProfile && profileUser === null) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <p>User not found</p>
+      <div 
+        className="flex items-center justify-center min-h-screen"
+        style={{ background: '#fafaf9' }}
+      >
+        <p style={{ color: '#57534e', fontFamily: "'DM Sans', sans-serif" }}>User not found</p>
       </div>
     );
   }
@@ -190,16 +199,26 @@ const Profile = () => {
   if (!displayUser) return null;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div 
+      className="min-h-screen py-8"
+      style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        .syne { font-family: 'Syne', sans-serif; }
+      `}</style>
       <div className="max-w-2xl mx-auto px-4">
-        <Card>
+        <Card style={{ background: '#fff', border: '1px solid #e7e5e4', borderRadius: '16px' }}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle>
+                <CardTitle 
+                  className="syne"
+                  style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+                >
                   {isOwnProfile ? 'Profile Settings' : `${displayUser.name || displayUser.username || 'User'}'s Profile`}
                 </CardTitle>
-                <CardDescription>
+                <CardDescription style={{ color: '#57534e' }}>
                   {isOwnProfile ? 'Manage your username and avatar' : 'View user information'}
                 </CardDescription>
               </div>
@@ -208,6 +227,7 @@ const Profile = () => {
                   variant="outline" 
                   onClick={() => navigate('/feed')}
                   className="flex items-center gap-2"
+                  style={{ borderColor: '#e7e5e4', color: '#57534e', borderRadius: '12px' }}
                 >
                   <ArrowLeft className="w-4 h-4" />
                   Back to My feed
@@ -218,67 +238,77 @@ const Profile = () => {
           <CardContent className="space-y-6">
             {/* Profile Display */}
             <div className="flex items-center space-x-4">
-              <Avatar className="w-20 h-20">
+              <Avatar className="w-20 h-20" style={{ border: '2px solid #e7e5e4' }}>
                 <AvatarImage src={displayUser.avatar} alt={displayUser.username || displayUser.name || 'User'} />
-                <AvatarFallback>{displayUser.username?.charAt(0) || displayUser.name?.charAt(0) || 'U'}</AvatarFallback>
+                <AvatarFallback style={{ background: '#fef3c7', color: '#92400e' }}>
+                  {displayUser.username?.charAt(0) || displayUser.name?.charAt(0) || 'U'}
+                </AvatarFallback>
               </Avatar>
               <div>
-                <h3 className="text-lg font-semibold">{displayUser.name || displayUser.username || 'Unknown'}</h3>
-                <p className="text-sm text-gray-500">@{displayUser.username || 'unknown'}</p>
-                <p className="text-sm text-gray-500">{displayUser.email || 'No email'}</p>
+                <h3 className="text-lg font-semibold" style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}>
+                  {displayUser.name || displayUser.username || 'Unknown'}
+                </h3>
+                <p className="text-sm" style={{ color: '#a8a29e' }}>@{displayUser.username || 'unknown'}</p>
+                <p className="text-sm" style={{ color: '#57534e' }}>{displayUser.email || 'No email'}</p>
               </div>
             </div>
 
             {/* Private Polls Section */}
             {isOwnProfile && (
               <div className="space-y-4">
-                <div className="flex items-center gap-2 border-t pt-6">
-                  <Lock className="w-4 h-4 text-gray-600" />
-                  <h4 className="text-lg font-semibold">My Private Polls</h4>
+                <div className="flex items-center gap-2 border-t pt-6" style={{ borderColor: '#e7e5e4' }}>
+                  <Lock className="w-4 h-4" style={{ color: '#d97706' }} />
+                  <h4 className="text-lg font-semibold syne" style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}>
+                    My Private Polls
+                  </h4>
                 </div>
                 
                 {privatePollsLoading ? (
                   <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent"></div>
+                    <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-transparent" style={{ borderColor: '#f59e0b' }}></div>
                   </div>
                 ) : privatePolls.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">
-                    <Lock className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  <div className="text-center py-8" style={{ color: '#a8a29e' }}>
+                    <Lock className="w-8 h-8 mx-auto mb-2" style={{ color: '#d97706' }} />
                     <p className="text-sm">You haven't created any private polls yet</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {privatePolls.map((poll) => (
-                      <Card key={poll._id} className="border-l-4 border-l-blue-500">
+                      <Card 
+                        key={poll._id} 
+                        style={{ borderLeft: '4px solid #d97706', background: '#fff', border: '1px solid #e7e5e4' }}
+                      >
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between">
                             <div className="flex-1">
-                              <h5 className="font-medium text-gray-900 mb-2">{poll.description}</h5>
+                              <h5 className="font-medium mb-2" style={{ color: '#1c1917' }}>{poll.description}</h5>
                               <div className="space-y-1">
                                 {poll.options?.slice(0, 3).map((option, index) => (
-                                  <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                                    <div className="w-2 h-2 bg-gray-300 rounded-full"></div>
+                                  <div key={index} className="flex items-center gap-2 text-sm" style={{ color: '#57534e' }}>
+                                    <div className="w-2 h-2 rounded-full" style={{ background: '#e7e5e4' }}></div>
                                     <span>{option.text}</span>
                                   </div>
                                 ))}
                                 {poll.options?.length > 3 && (
-                                  <p className="text-xs text-gray-500">+{poll.options.length - 3} more options</p>
+                                  <p className="text-xs" style={{ color: '#a8a29e' }}>+{poll.options.length - 3} more options</p>
                                 )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-2 text-xs text-gray-500">
+                            <div className="flex items-center gap-2 text-xs" style={{ color: '#d97706' }}>
                               <Eye className="w-3 h-3" />
                               <span>Private</span>
                             </div>
                           </div>
                           <div className="mt-3 flex items-center justify-between">
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs" style={{ color: '#a8a29e' }}>
                               Created {new Date(poll.createdAt).toLocaleDateString()}
                             </p>
                             <Button 
                               size="sm" 
                               variant="outline"
                               onClick={() => navigate(`/poll/${poll._id}`)}
+                              style={{ borderColor: '#e7e5e4', color: '#57534e', borderRadius: '8px' }}
                             >
                               View Poll
                             </Button>
@@ -296,7 +326,11 @@ const Profile = () => {
               <>
                 {!isEditing ? (
                   <div className="flex justify-end">
-                    <Button onClick={() => setIsEditing(true)} variant="outline">
+                    <Button 
+                      onClick={() => setIsEditing(true)} 
+                      variant="outline"
+                      style={{ borderColor: '#e7e5e4', color: '#57534e', borderRadius: '12px' }}
+                    >
                       <Edit className="w-4 h-4 mr-2" />
                       Edit Profile
                     </Button>
@@ -322,24 +356,24 @@ const Profile = () => {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Choose Avatar</Label>
+                      <Label style={{ color: '#1c1917' }}>Choose Avatar</Label>
                       <div className="grid grid-cols-6 gap-3">
                         {avatarOptions.map((avatar, index) => (
                           <div
                             key={index}
-                            className={`relative cursor-pointer rounded-lg border-2 transition-all ${
-                              selectedAvatar === avatar
-                                ? 'border-blue-500 ring-2 ring-blue-500 ring-offset-2'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
+                            className="relative cursor-pointer rounded-lg border-2 transition-all"
+                            style={{
+                              borderColor: selectedAvatar === avatar ? '#f59e0b' : '#e7e5e4',
+                              boxShadow: selectedAvatar === avatar ? '0 0 0 2px #f59e0b' : 'none'
+                            }}
                             onClick={() => setSelectedAvatar(avatar)}
                           >
                             <Avatar className="w-12 h-12">
                               <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
-                              <AvatarFallback>{index + 1}</AvatarFallback>
+                              <AvatarFallback style={{ background: '#f5f4f2' }}>{index + 1}</AvatarFallback>
                             </Avatar>
                             {selectedAvatar === avatar && (
-                              <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
+                              <div className="absolute -top-1 -right-1 rounded-full p-0.5" style={{ background: '#f59e0b' }}>
                                 <Check className="w-3 h-3 text-white" />
                               </div>
                             )}
@@ -349,10 +383,19 @@ const Profile = () => {
                     </div>
 
                     <div className="flex gap-2">
-                      <Button onClick={handleSave} disabled={loading || usernameError}>
+                      <Button 
+                        onClick={handleSave} 
+                        disabled={loading || usernameError}
+                        className="syne font-semibold text-white hover:opacity-90"
+                        style={{ background: '#1c1917', borderRadius: '12px', fontFamily: "'Syne', sans-serif" }}
+                      >
                         {loading ? 'Saving...' : 'Save Changes'}
                       </Button>
-                      <Button variant="outline" onClick={handleCancel}>
+                      <Button 
+                        variant="outline" 
+                        onClick={handleCancel}
+                        style={{ borderColor: '#e7e5e4', color: '#57534e', borderRadius: '12px' }}
+                      >
                         <X className="w-4 h-4 mr-2" />
                         Cancel
                       </Button>

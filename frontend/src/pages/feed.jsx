@@ -115,7 +115,14 @@ const Feed = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Google Font Loader */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        .syne { font-family: 'Syne', sans-serif; }
+        .dm { font-family: 'DM Sans', sans-serif; }
+      `}</style>
+
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -123,7 +130,7 @@ const Feed = () => {
           {/* Left Sidebar - Hidden on mobile, visible on md+ screens */}
           <div className="hidden md:block md:col-span-1">
             <div className="sticky top-6 space-y-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className="rounded-xl p-4" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
                 <AppSidebar />
               </div>
             </div>
@@ -132,37 +139,39 @@ const Feed = () => {
           {/* Main Feed - Full width on mobile, 2 columns on md, 2 columns on lg */}
           <div className="md:col-span-2 lg:col-span-2 space-y-4">
             {/* Create Poll Card */}
-            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6 shadow-sm">
+            <div className="rounded-xl p-4 sm:p-6 shadow-sm" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
               <CreatePoll onPollCreated={handlePollCreated} />
             </div>
 
             {/* Feed Content */}
             {loading ? (
               <div className="flex justify-center py-12">
-                <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-2 border-amber-500 border-t-transparent"></div>
               </div>
             ) : error ? (
-              <div className="bg-red-50 border border-red-200 rounded-xl p-4 sm:p-6 text-center">
-                <p className="text-red-600 mb-4">{error}</p>
+              <div className="rounded-xl p-4 sm:p-6 text-center" style={{ background: '#fef2f2', border: '1px solid #fecaca' }}>
+                <p className="mb-4" style={{ color: '#dc2626' }}>{error}</p>
                 <Button 
                   onClick={refreshPolls}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="text-white hover:opacity-90"
+                  style={{ background: '#1c1917', borderRadius: '12px' }}
                 >
                   Try Again
                 </Button>
               </div>
             ) : polls.length === 0 ? (
-              <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-12 text-center">
-                <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 sm:w-8 sm:h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="rounded-xl p-6 sm:p-12 text-center" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
+                <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#fef3c7' }}>
+                  <svg className="w-6 h-6 sm:w-8 sm:h-8" style={{ color: '#d97706' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                   </svg>
                 </div>
-                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No polls yet</h3>
-                <p className="text-sm text-gray-600 mb-4 sm:mb-6">Be the first to create a poll and start the conversation!</p>
+                <h3 className="text-base sm:text-lg font-semibold mb-2 syne" style={{ color: '#1c1917' }}>No polls yet</h3>
+                <p className="text-sm mb-4 sm:mb-6" style={{ color: '#57534e' }}>Be the first to create a poll and start the conversation!</p>
                 <Button 
                   onClick={() => document.querySelector('textarea')?.focus()}
-                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  className="text-white hover:opacity-90 syne font-semibold"
+                  style={{ background: '#1c1917', borderRadius: '12px' }}
                 >
                   Create Your First Poll
                 </Button>
@@ -179,9 +188,14 @@ const Feed = () => {
                           pollRefs.current[poll._id] = el
                         }
                       }}
-                      className={`bg-white rounded-xl border shadow-sm hover:shadow-md transition-shadow duration-200 ${
-                        isHighlighted ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200'
+                      className={`rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 ${
+                        isHighlighted ? 'ring-2' : ''
                       }`}
+                      style={{ 
+                        background: '#fff', 
+                        border: isHighlighted ? '2px solid #f59e0b' : '1px solid #e7e5e4',
+                        boxShadow: isHighlighted ? '0 0 0 3px #fef3c7' : undefined
+                      }}
                     >
                       <PollCard 
                         poll={poll} 
@@ -198,7 +212,7 @@ const Feed = () => {
           {/* Right Sidebar - Hidden on mobile and md, visible on lg+ screens */}
           <div className="hidden lg:block lg:col-span-1">
             <div className="sticky top-6 space-y-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-4 shadow-sm">
+              <div className="rounded-xl p-4 shadow-sm" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
                 <TrendingSection />
               </div>
             </div>

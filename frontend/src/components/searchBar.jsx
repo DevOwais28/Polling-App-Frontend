@@ -82,10 +82,12 @@ const SearchBar = () => {
             onBlur={() => setTimeout(() => setIsFocused(false), 200)}
             placeholder="Search users..."
             className={`block w-full pl-10 pr-10 py-2 border rounded-lg text-sm 
-              ${isFocused ? 'border-blue-500 ring-1 ring-blue-500' : 'border-gray-300'} 
-              focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 
               transition-colors duration-200 bg-white text-gray-900 placeholder-gray-500
               sm:w-64 md:w-72 lg:w-80`}
+            style={{
+              borderColor: isFocused ? '#f59e0b' : '#e7e5e4',
+              boxShadow: isFocused ? '0 0 0 1px #f59e0b' : 'none'
+            }}
           />
 
           {searchTerm && (
@@ -105,7 +107,7 @@ const SearchBar = () => {
         <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 max-h-80 overflow-y-auto">
           {isLoading ? (
             <div className="p-4 text-center">
-              <div className="animate-spin rounded-full h-6 w-6 border-2 border-blue-600 border-t-transparent mx-auto"></div>
+              <div className="animate-spin rounded-full h-6 w-6 border-2 border-t-transparent mx-auto" style={{ borderColor: '#f59e0b' }}></div>
               <p className="text-sm text-gray-500 mt-2">Searching...</p>
             </div>
           ) : searchResults.length > 0 ? (

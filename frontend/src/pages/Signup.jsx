@@ -18,7 +18,7 @@ import { apiRequest } from "../api";
 import { useNavigate } from "react-router-dom"
 import { useState, useEffect } from "react"
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
-import { BarChart3, Sparkles } from 'lucide-react';
+import { BarChart3, Sparkles, ArrowUpRight } from 'lucide-react';
 
 export default function Signup() {
   const [loading, setLoading] = useState(false);
@@ -113,22 +113,37 @@ export default function Signup() {
     }
   }, [navigate]);
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="min-h-screen" style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Google Font Loader */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        .syne { font-family: 'Syne', sans-serif; }
+        .dm { font-family: 'DM Sans', sans-serif; }
+      `}</style>
+
       {/* Navigation */}
-      <nav className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="fixed top-0 w-full z-50" style={{ background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #e7e5e4' }}>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-white" />
+            <Link to="/" className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: '#1c1917' }}>
+                <BarChart3 className="w-5 h-5" style={{ color: '#fbbf24' }} />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold syne" style={{ color: '#1c1917' }}>
                 WePollin
               </span>
-            </div>
+            </Link>
             <div className="flex items-center space-x-4">
-              <Link to="/login" className="text-gray-700 hover:text-blue-600">
+              <Link to="/login" className="text-sm font-medium transition-colors hover:text-amber-600" style={{ color: '#57534e' }}>
                 Sign In
+              </Link>
+              <Link to="/login">
+                <Button 
+                  className="syne font-semibold text-sm"
+                  style={{ background: '#1c1917', color: '#fff', borderRadius: '12px', padding: '8px 18px' }}
+                >
+                  Log in <ArrowUpRight className="w-4 h-4 ml-1" />
+                </Button>
               </Link>
             </div>
           </div>
@@ -136,27 +151,30 @@ export default function Signup() {
       </nav>
 
       {/* Signup Section */}
-      <section className="pt-20 pb-16 px-4 sm:px-6 lg:px-8">
+      <section className="pt-24 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto">
           <div className="text-center mb-8">
             <div className="mb-4">
-              <span className="inline-flex items-center px-4 py-2 rounded-full bg-purple-100 text-purple-800 text-sm font-medium mb-4">
-                <Sparkles className="w-4 h-4 mr-2" />
+              <span 
+                className="inline-flex items-center px-4 py-2 rounded-full text-xs font-semibold uppercase tracking-wider mb-4"
+                style={{ background: '#fef3c7', border: '1px solid #fde68a', color: '#92400e' }}
+              >
+                <Sparkles className="w-3 h-3 mr-2" />
                 Join WePollin
               </span>
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold mb-2 syne" style={{ color: '#1c1917', letterSpacing: '-0.02em' }}>
               Create your account
             </h1>
-            <p className="text-gray-600">
+            <p style={{ color: '#57534e' }}>
               Start creating amazing polls and engaging your audience today
             </p>
           </div>
 
-          <Card className="w-full bg-white/90 backdrop-blur-sm border-gray-200 shadow-xl">
+          <Card className="w-full shadow-xl" style={{ background: '#fff', border: '1px solid #e7e5e4', borderRadius: '20px' }}>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">Get started</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-2xl syne" style={{ color: '#1c1917' }}>Get started</CardTitle>
+              <CardDescription style={{ color: '#57534e' }}>
                 Join thousands of creators who trust WePollin
               </CardDescription>
             </CardHeader>
@@ -164,7 +182,7 @@ export default function Signup() {
               <form>
                 <div className="flex flex-col gap-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Full Name</Label>
                     <Input
                       id="name"
                       type="name"
@@ -173,16 +191,17 @@ export default function Signup() {
                       value={formik.values.name}
                       onChange={formik.handleChange}
                       required
-                      className="bg-white/50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="focus:ring-amber-500 focus:border-amber-500"
+                      style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                     />
                     {formik.errors.name && formik.touched.name && (
-                      <span className="text-red-500 text-sm">
+                      <span className="text-sm" style={{ color: '#dc2626' }}>
                         {formik.errors.name}
                       </span>
                     )}
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="email">Email</Label>
+                    <Label htmlFor="email" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Email</Label>
                     <Input
                       id="email"
                       type="email"
@@ -191,16 +210,17 @@ export default function Signup() {
                       value={formik.values.email}
                       onChange={formik.handleChange}
                       required
-                      className="bg-white/50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="focus:ring-amber-500 focus:border-amber-500"
+                      style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                     />
                     {formik.errors.email && formik.touched.email && (
-                      <span className="text-red-500 text-sm">
+                      <span className="text-sm" style={{ color: '#dc2626' }}>
                         {formik.errors.email}
                       </span>
                     )}
                   </div>
                   <div className="grid gap-2 relative">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Password</Label>
                     <Input
                       id="password"
                       type={showPassword ? 'text' : 'password'}
@@ -209,22 +229,24 @@ export default function Signup() {
                       value={formik.values.password}
                       onChange={formik.handleChange}
                       required
-                      className="bg-white/50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="focus:ring-amber-500 focus:border-amber-500"
+                      style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                     />
                     <span
                       onClick={togglePasswordVisibility}
-                      className="absolute right-3 top-9 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-blue-600"
+                      className="absolute right-3 top-9 -translate-y-1/2 cursor-pointer"
+                      style={{ color: '#a8a29e' }}
                     >
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </span>
                     {formik.errors.password && formik.touched.password && (
-                      <span className="text-red-500 text-sm">
+                      <span className="text-sm" style={{ color: '#dc2626' }}>
                         {formik.errors.password}
                       </span>
                     )}
                   </div>
                   <div className="grid gap-2 relative">
-                    <Label htmlFor="confirmPassword">Confirm Password</Label>
+                    <Label htmlFor="confirmPassword" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Confirm Password</Label>
                     <Input
                       id="confirmPassword"
                       name="confirmPassword"
@@ -233,22 +255,24 @@ export default function Signup() {
                       value={formik.values.confirmPassword}
                       onChange={formik.handleChange}
                       required
-                      className="bg-white/50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                      className="focus:ring-amber-500 focus:border-amber-500"
+                      style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                     />
                     <span
                       onClick={togglePasswordVisibility}
-                      className="absolute right-3 top-9 -translate-y-1/2 cursor-pointer text-gray-500 hover:text-blue-600"
+                      className="absolute right-3 top-9 -translate-y-1/2 cursor-pointer"
+                      style={{ color: '#a8a29e' }}
                     >
                       {showPassword ? <FaEyeSlash /> : <FaEye />}
                     </span>
                     {formik.errors.confirmPassword && formik.touched.confirmPassword && (
-                      <span className="text-red-500 text-sm">
+                      <span className="text-sm" style={{ color: '#dc2626' }}>
                         {formik.errors.confirmPassword}
                       </span>
                     )}
                   </div>
                   <div className="flex justify-between items-center">
-                    <Link to="/login" className="text-sm text-blue-600 hover:text-blue-700">
+                    <Link to="/login" className="text-sm font-medium hover:underline" style={{ color: '#d97706' }}>
                       Already have an account?
                     </Link>
                   </div>
@@ -258,23 +282,25 @@ export default function Signup() {
             <CardFooter className="flex-col gap-3">
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white"
+                className="w-full syne font-semibold text-white hover:opacity-90 transition-opacity"
+                style={{ background: '#1c1917', borderRadius: '12px', padding: '12px 24px', boxShadow: '0 4px 16px rgba(28,25,23,0.18)' }}
                 onClick={() => formik.submitForm()}
                 disabled={loading}
               >
                 {loading ? "Creating account..." : "Create account"}
               </Button>
-              <div className="relative">
+              <div className="relative w-full">
                 <div className="absolute inset-0 flex items-center">
-                  <span className="w-full border-t border-gray-300" />
+                  <span className="w-full" style={{ borderTop: '1px solid #e7e5e4' }} />
                 </div>
                 <div className="relative flex justify-center text-xs">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                  <span className="px-2" style={{ background: '#fff', color: '#a8a29e' }}>Or continue with</span>
                 </div>
               </div>
               <Button
                 variant="outline"
-                className="w-full border-gray-300 hover:border-blue-600 hover:text-blue-600"
+                className="w-full hover:opacity-80 transition-opacity"
+                style={{ border: '1.5px solid #e7e5e4', borderRadius: '12px', color: '#1c1917' }}
                 onClick={() => continueWithGoogle()}
               >
                 <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">

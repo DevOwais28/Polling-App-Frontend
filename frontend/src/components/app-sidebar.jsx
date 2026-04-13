@@ -15,22 +15,32 @@ export function AppSidebar() {
   return (
     <div className="w-full h-full">
       <div className="p-4">
-        <h3 className="text-lg font-bold text-gray-900 mb-6">WePollin</h3>
+        <h3 
+          className="text-lg font-bold mb-6"
+          style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+        >
+          WePollin
+        </h3>
         <nav className="space-y-1">
-          {items.map((item) => (
-            <Link
-              key={item.title}
-              to={item.url}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium
-                ${location.pathname === item.url
-                  ? 'bg-blue-50 text-blue-600 shadow-sm'
-                  : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900'
-                }`}
-            >
-              <item.icon className="h-4 w-4" />
-              <span>{item.title}</span>
-            </Link>
-          ))}
+          {items.map((item) => {
+            const isActive = location.pathname === item.url;
+            return (
+              <Link
+                key={item.title}
+                to={item.url}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm font-medium"
+                style={{
+                  background: isActive ? '#fef3c7' : 'transparent',
+                  color: isActive ? '#92400e' : '#57534e',
+                  border: isActive ? '1px solid #fde68a' : '1px solid transparent',
+                  fontFamily: "'DM Sans', sans-serif"
+                }}
+              >
+                <item.icon className="h-4 w-4" />
+                <span>{item.title}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </div>

@@ -53,13 +53,17 @@ const MyPolls = () => {
 
   const handleDeletePoll = (pollId) => {
     toast.custom((t) => (
-      <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-md">
-        <h3 className="font-semibold text-lg mb-2">Delete Poll</h3>
-        <p className="text-gray-700 mb-4">Are you sure you want to delete this poll? This action cannot be undone.</p>
+      <div 
+        className="rounded-lg shadow-lg p-4 w-full max-w-md"
+        style={{ background: '#fff', border: '1px solid #e7e5e4' }}
+      >
+        <h3 className="font-semibold text-lg mb-2 syne" style={{ color: '#1c1917' }}>Delete Poll</h3>
+        <p className="mb-4" style={{ color: '#57534e' }}>Are you sure you want to delete this poll? This action cannot be undone.</p>
         <div className="flex justify-end space-x-2">
           <button
             onClick={() => toast.dismiss(t)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none"
+            className="px-4 py-2 text-sm font-medium rounded-md focus:outline-none transition-colors"
+            style={{ background: '#f5f4f2', color: '#57534e' }}
           >
             Cancel
           </button>
@@ -69,20 +73,21 @@ const MyPolls = () => {
               try {
                 await apiRequest('DELETE', `polls/poll/${pollId}`);
                 toast.success('Poll deleted successfully');
-                fetchMyPolls(); // Refresh the list
+                fetchMyPolls();
               } catch (error) {
                 console.error('Error deleting poll:', error);
                 toast.error(error.response?.data?.message || 'Failed to delete poll');
               }
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none"
+            className="px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none transition-opacity hover:opacity-90"
+            style={{ background: '#dc2626' }}
           >
             Delete
           </button>
         </div>
       </div>
     ), {
-      duration: 10000, // Keep it open longer since user needs to interact
+      duration: 10000,
       position: 'top-center',
     });
   };
@@ -113,7 +118,7 @@ const MyPolls = () => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-amber-500 border-t-transparent"></div>
       </div>
     )
   }
@@ -121,14 +126,15 @@ const MyPolls = () => {
   if (polls.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Users className="h-8 w-8 text-gray-400" />
+        <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: '#fef3c7' }}>
+          <Users className="h-8 w-8" style={{ color: '#d97706' }} />
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">No polls created yet</h3>
-        <p className="text-gray-600 mb-6">You haven't created any polls yet. Start by creating your first poll!</p>
+        <h3 className="text-lg font-semibold mb-2 syne" style={{ color: '#1c1917' }}>No polls created yet</h3>
+        <p className="mb-6" style={{ color: '#57534e' }}>You haven't created any polls yet. Start by creating your first poll!</p>
         <Button 
           onClick={() => window.location.href = '/feed'}
-          className="bg-blue-600 hover:bg-blue-700 text-white"
+          className="text-white hover:opacity-90 syne font-semibold"
+          style={{ background: '#1c1917', borderRadius: '12px' }}
         >
           Create Your First Poll
         </Button>
@@ -139,20 +145,30 @@ const MyPolls = () => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-bold text-gray-900">Your Created Polls</h2>
-        <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+        <h2 className="text-xl font-bold syne" style={{ color: '#1c1917' }}>Your Created Polls</h2>
+        <span 
+          className="text-sm px-3 py-1 rounded-full"
+          style={{ background: '#fef3c7', color: '#92400e' }}
+        >
           {polls.length} {polls.length === 1 ? 'poll' : 'polls'}
         </span>
       </div>
       
       <div className="space-y-4">
         {polls.map((poll) => (
-          <Card key={poll._id} className="border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200">
+          <Card 
+            key={poll._id} 
+            className="shadow-sm hover:shadow-md transition-shadow duration-200"
+            style={{ border: '1px solid #e7e5e4', borderRadius: '16px' }}
+          >
             <CardHeader className="pb-4">
               <div className="flex items-start justify-between">
                 <div className="flex-1">
                   <div className="flex items-start justify-between">
-                    <CardTitle className="text-base font-semibold text-gray-900 mb-3 leading-tight">
+                    <CardTitle 
+                      className="text-base font-semibold mb-3 leading-tight syne"
+                      style={{ color: '#1c1917' }}
+                    >
                       {poll.description}
                     </CardTitle>
                     <DropdownMenu>
@@ -178,11 +194,13 @@ const MyPolls = () => {
                     </DropdownMenu>
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                      poll.isPrivate 
-                        ? 'bg-red-100 text-red-700' 
-                        : 'bg-green-100 text-green-700'
-                    }`}>
+                    <div 
+                      className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium"
+                      style={{
+                        background: poll.isPrivate ? '#fef2f2' : '#f0fdf4',
+                        color: poll.isPrivate ? '#dc2626' : '#16a34a'
+                      }}
+                    >
                       {poll.isPrivate ? (
                         <>
                           <Lock className="h-3 w-3 mr-1" />
@@ -195,11 +213,11 @@ const MyPolls = () => {
                         </>
                       )}
                     </div>
-                    <span className="text-xs text-gray-500">
+                    <span className="text-xs" style={{ color: '#a8a29e' }}>
                       {formatDate(poll.createdAt)}
                     </span>
                   </div>
-                  <CardDescription className="text-sm text-gray-600">
+                  <CardDescription className="text-sm" style={{ color: '#57534e' }}>
                     {poll.options?.length || 0} options • {poll.isPrivate ? 'Private poll' : 'Public poll'}
                   </CardDescription>
                 </div>
@@ -208,16 +226,23 @@ const MyPolls = () => {
             
             {poll.isPrivate && (
               <CardContent className="pt-0">
-                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div 
+                  className="rounded-lg p-4"
+                  style={{ background: '#fef3c7', border: '1px solid #fde68a' }}
+                >
                   <div className="flex items-center justify-between mb-3">
-                    <label className="text-sm font-semibold text-blue-900">
+                    <label 
+                      className="text-sm font-semibold"
+                      style={{ color: '#92400e' }}
+                    >
                       Private Access Key
                     </label>
                     <Button
                       size="sm"
                       variant="ghost"
                       onClick={() => toggleKeyVisibility(poll._id)}
-                      className="h-7 px-2 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                      className="h-7 px-2 hover:opacity-80"
+                      style={{ color: '#d97706' }}
                     >
                       {showKeys[poll._id] ? (
                         <EyeOff className="h-3 w-3" />
@@ -230,19 +255,24 @@ const MyPolls = () => {
                     <Input
                       value={showKeys[poll._id] ? poll.privateKey : '••••••••••••••••'}
                       readOnly
-                      className="font-mono text-sm bg-white border-blue-200"
+                      className="font-mono text-sm"
                       type={showKeys[poll._id] ? "text" : "password"}
+                      style={{ background: '#fff', border: '1px solid #fde68a', borderRadius: '8px' }}
                     />
                     <Button
                       size="sm"
                       variant="outline"
                       onClick={() => copyToClipboard(poll.privateKey, poll._id)}
-                      className="px-3 hover:bg-blue-50 hover:border-blue-300"
+                      className="px-3 hover:opacity-80"
+                      style={{ border: '1px solid #fde68a', borderRadius: '8px', color: '#92400e' }}
                     >
                       <Copy className="h-3 w-3" />
                     </Button>
                   </div>
-                  <p className="text-xs text-blue-700 mt-3 font-medium">
+                  <p 
+                    className="text-xs mt-3 font-medium"
+                    style={{ color: '#a16207' }}
+                  >
                     Share this key with users you want to invite to your private poll.
                   </p>
                 </div>

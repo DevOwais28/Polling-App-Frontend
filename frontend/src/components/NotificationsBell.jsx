@@ -114,7 +114,7 @@ const NotificationsBell = () => {
 
   const getNotificationIcon = (type) => {
     switch (type) {
-      case 'poll_vote': return <Vote className="w-4 h-4 text-blue-600" />;
+      case 'poll_vote': return <Vote className="w-4 h-4" style={{ color: '#f59e0b' }} />;
       case 'poll_comment': return <MessageSquare className="w-4 h-4 text-green-600" />;
       case 'profile_visit': return <Eye className="w-4 h-4 text-purple-600" />;
       case 'mention': return <User className="w-4 h-4 text-orange-600" />;
@@ -156,7 +156,7 @@ const NotificationsBell = () => {
       {/* Bell Icon */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        className="relative p-2 rounded-full hover:bg-gray-100 active:bg-gray-200 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
         aria-label={`${unreadCount > 0 ? `${unreadCount} unread notifications` : 'Notifications'}`}
       >
         <Bell className="w-5 h-5 text-gray-700 md:w-6 md:h-6" />
@@ -198,7 +198,8 @@ const NotificationsBell = () => {
                 {displayedNotifications.map((notification) => (
                   <div
                     key={notification._id}
-                    className={`p-4 hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-colors ${!notification.isRead ? 'bg-blue-50' : ''}`}
+                    className="p-4 hover:bg-gray-50 active:bg-gray-100 cursor-pointer transition-colors"
+                    style={{ background: !notification.isRead ? '#fef3c7' : undefined }}
                     onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start gap-3">

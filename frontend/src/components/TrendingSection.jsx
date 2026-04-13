@@ -77,25 +77,25 @@ const TrendingSection = () => {
   if (loading) {
     return (
       <div className="space-y-6">
-        <Card>
+        <Card style={{ border: '1px solid #e7e5e4', borderRadius: '16px' }}>
           <CardContent className="p-4">
             <div className="animate-pulse space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+              <div className="h-4 rounded w-1/3" style={{ background: '#e7e5e4' }}></div>
               <div className="space-y-2">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-3 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-3 rounded" style={{ background: '#e7e5e4' }}></div>
                 ))}
               </div>
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card style={{ border: '1px solid #e7e5e4', borderRadius: '16px' }}>
           <CardContent className="p-4">
             <div className="animate-pulse space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-1/3"></div>
+              <div className="h-4 rounded w-1/3" style={{ background: '#e7e5e4' }}></div>
               <div className="space-y-2">
                 {[1, 2, 3].map(i => (
-                  <div key={i} className="h-3 bg-gray-200 rounded"></div>
+                  <div key={i} className="h-3 rounded" style={{ background: '#e7e5e4' }}></div>
                 ))}
               </div>
             </div>
@@ -109,35 +109,47 @@ const TrendingSection = () => {
     <div className="space-y-6">
       {/* Trending Topics */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <TrendingUp className="h-4 w-4 text-blue-600" />
+        <h3 
+          className="text-sm font-semibold mb-3 flex items-center gap-2 syne"
+          style={{ color: '#1c1917' }}
+        >
+          <TrendingUp className="h-4 w-4" style={{ color: '#f59e0b' }} />
           Trending Topics
         </h3>
         <div className="space-y-2">
           {trendingTopics.length > 0 ? (
             trendingTopics.map((topic, index) => (
-              <div key={index} className="flex items-center justify-between text-sm p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer">
+              <div 
+                key={index} 
+                className="flex items-center justify-between text-sm p-2 rounded-lg transition-colors cursor-pointer hover:bg-amber-50"
+              >
                 <div className="flex items-center gap-2">
-                  <Hash className="h-3 w-3 text-gray-400" />
-                  <span className="text-gray-700 hover:text-blue-600 transition-colors">
+                  <Hash className="h-3 w-3" style={{ color: '#a8a29e' }} />
+                  <span 
+                    className="transition-colors hover:text-amber-600"
+                    style={{ color: '#57534e' }}
+                  >
                     {topic.hashtag}
                   </span>
                 </div>
-                <span className="text-gray-500 text-xs font-medium">
+                <span className="text-xs font-medium" style={{ color: '#a8a29e' }}>
                   {topic.posts} votes
                 </span>
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500 p-2">No trending topics yet</p>
+            <p className="text-sm p-2" style={{ color: '#a8a29e' }}>No trending topics yet</p>
           )}
         </div>
       </div>
 
       {/* Active Polls */}
       <div>
-        <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-          <Activity className="h-4 w-4 text-green-600" />
+        <h3 
+          className="text-sm font-semibold mb-3 flex items-center gap-2 syne"
+          style={{ color: '#1c1917' }}
+        >
+          <Activity className="h-4 w-4" style={{ color: '#22c55e' }} />
           Active Polls
         </h3>
         <div className="space-y-2">
@@ -145,24 +157,27 @@ const TrendingSection = () => {
             activePolls.map((poll, index) => (
               <div 
                 key={poll._id} 
-                className="p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                className="p-2 rounded-lg transition-colors cursor-pointer hover:bg-amber-50"
                 onClick={() => handlePollClick(poll._id)}
               >
-                <p className="text-sm text-gray-700 hover:text-blue-600 transition-colors mb-1 font-medium">
+                <p 
+                  className="text-sm transition-colors mb-1 font-medium hover:text-amber-600"
+                  style={{ color: '#57534e' }}
+                >
                   {truncateText(poll.description, 45)}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 font-medium">
+                  <span className="text-xs font-medium" style={{ color: '#a8a29e' }}>
                     {poll.recentVoteCount} votes
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs" style={{ color: '#d6d3d1' }}>
                     {formatTimeAgo(poll.lastActivity)}
                   </span>
                 </div>
               </div>
             ))
           ) : (
-            <p className="text-sm text-gray-500 p-2">No active polls recently</p>
+            <p className="text-sm p-2" style={{ color: '#a8a29e' }}>No active polls recently</p>
           )}
         </div>
       </div>
@@ -170,25 +185,31 @@ const TrendingSection = () => {
       {/* Most Voted */}
       {trendingPolls.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <Users className="h-4 w-4 text-purple-600" />
+          <h3 
+            className="text-sm font-semibold mb-3 flex items-center gap-2 syne"
+            style={{ color: '#1c1917' }}
+          >
+            <Users className="h-4 w-4" style={{ color: '#8b5cf6' }} />
             Most Voted
           </h3>
           <div className="space-y-2">
             {trendingPolls.slice(0, 5).map((poll, index) => (
               <div 
                 key={poll._id} 
-                className="p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                className="p-2 rounded-lg transition-colors cursor-pointer hover:bg-amber-50"
                 onClick={() => handlePollClick(poll._id)}
               >
-                <p className="text-sm text-gray-700 hover:text-blue-600 transition-colors mb-1 font-medium">
+                <p 
+                  className="text-sm transition-colors mb-1 font-medium hover:text-amber-600"
+                  style={{ color: '#57534e' }}
+                >
                   {truncateText(poll.description, 45)}
                 </p>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500 font-medium">
+                  <span className="text-xs font-medium" style={{ color: '#a8a29e' }}>
                     {poll.voteCount} votes
                   </span>
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs" style={{ color: '#d6d3d1' }}>
                     @{poll.createdBy?.username || 'anonymous'}
                   </span>
                 </div>

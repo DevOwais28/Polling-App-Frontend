@@ -89,11 +89,25 @@ const ProfileSetup = ({ onComplete }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <Card className="w-full max-w-md">
+    <div 
+      className="min-h-screen flex items-center justify-center p-4"
+      style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+      `}</style>
+      <Card 
+        className="w-full max-w-md"
+        style={{ background: '#fff', border: '1px solid #e7e5e4', borderRadius: '16px' }}
+      >
         <CardHeader>
-          <CardTitle>Complete Your Profile</CardTitle>
-          <CardDescription>
+          <CardTitle 
+            className="syne"
+            style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+          >
+            Complete Your Profile
+          </CardTitle>
+          <CardDescription style={{ color: '#57534e' }}>
             Choose a username and avatar to get started
           </CardDescription>
         </CardHeader>
@@ -101,7 +115,7 @@ const ProfileSetup = ({ onComplete }) => {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Username Input */}
             <div className="space-y-2">
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username" style={{ color: '#1c1917' }}>Username</Label>
               <Input
                 id="username"
                 value={username}
@@ -109,6 +123,7 @@ const ProfileSetup = ({ onComplete }) => {
                 placeholder="Enter username"
                 maxLength={20}
                 className={usernameError ? "border-red-500" : ""}
+                style={{ borderColor: usernameError ? undefined : '#e7e5e4', borderRadius: '12px' }}
               />
               {usernameError && (
                 <p className="text-sm text-red-500">{usernameError}</p>
@@ -117,24 +132,24 @@ const ProfileSetup = ({ onComplete }) => {
 
             {/* Avatar Selection */}
             <div className="space-y-2">
-              <Label>Choose Avatar</Label>
+              <Label style={{ color: '#1c1917' }}>Choose Avatar</Label>
               <div className="grid grid-cols-4 gap-3">
                 {avatarOptions.map((avatar, index) => (
                   <div
                     key={index}
-                    className={`relative cursor-pointer rounded-lg border-2 transition-all ${
-                      selectedAvatar === avatar
-                        ? 'border-blue-500 ring-2 ring-blue-500 ring-offset-2'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className="relative cursor-pointer rounded-lg border-2 transition-all"
+                    style={{
+                      borderColor: selectedAvatar === avatar ? '#f59e0b' : '#e7e5e4',
+                      boxShadow: selectedAvatar === avatar ? '0 0 0 2px #f59e0b' : 'none'
+                    }}
                     onClick={() => setSelectedAvatar(avatar)}
                   >
                     <Avatar className="w-16 h-16">
                       <AvatarImage src={avatar} alt={`Avatar ${index + 1}`} />
-                      <AvatarFallback>{index + 1}</AvatarFallback>
+                      <AvatarFallback style={{ background: '#f5f4f2' }}>{index + 1}</AvatarFallback>
                     </Avatar>
                     {selectedAvatar === avatar && (
-                      <div className="absolute -top-1 -right-1 bg-blue-500 rounded-full p-0.5">
+                      <div className="absolute -top-1 -right-1 rounded-full p-0.5" style={{ background: '#f59e0b' }}>
                         <Check className="w-3 h-3 text-white" />
                       </div>
                     )}
@@ -145,8 +160,9 @@ const ProfileSetup = ({ onComplete }) => {
 
             <Button 
               type="submit" 
-              className="w-full" 
+              className="w-full syne font-semibold text-white hover:opacity-90"
               disabled={loading || !username || usernameError}
+              style={{ background: '#1c1917', borderRadius: '12px', fontFamily: "'Syne', sans-serif" }}
             >
               {loading ? 'Setting up...' : 'Complete Setup'}
             </Button>

@@ -111,7 +111,8 @@ export function CommentActions({ comment, onUpdate, onDelete, isOwner }) {
       <span>•</span>
       <button
         onClick={() => setIsEditing(true)}
-        className="text-blue-600 hover:text-blue-800 hover:underline"
+        className="hover:underline"
+        style={{ color: '#d97706' }}
         disabled={isLoading}
       >
         Edit

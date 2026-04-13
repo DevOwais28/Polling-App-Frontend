@@ -139,17 +139,23 @@ const CreatePoll = ({ onPollCreated }) => {
 
   return (
     <div className="w-full">
-      <Item variant="outline" className="w-full hover:shadow-md transition-shadow">
+      <Item 
+        variant="outline" 
+        className="w-full hover:shadow-md transition-shadow"
+        style={{ border: '1px solid #e7e5e4', borderRadius: '16px', background: '#fafaf9' }}
+      >
         <ItemMedia>
-          <Avatar className="size-9">
-        <AvatarImage src={profile?.avatar} />
-            <AvatarFallback>ER</AvatarFallback>
+          <Avatar className="size-9" style={{ border: '2px solid #e7e5e4' }}>
+            <AvatarImage src={profile?.avatar} />
+            <AvatarFallback style={{ background: '#fef3c7', color: '#92400e' }}>ER</AvatarFallback>
           </Avatar>
         </ItemMedia>
 
         <ItemContent>
-          <ItemTitle className="text-sm font-medium">{profile?.username}</ItemTitle>
-          <ItemDescription className="text-xs sm:text-sm text-gray-600">
+          <ItemTitle className="text-sm font-medium" style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}>
+            {profile?.username}
+          </ItemTitle>
+          <ItemDescription className="text-xs sm:text-sm" style={{ color: '#57534e' }}>
             Add a new poll. {isPrivate ? "Private - share key with selected users" : "Anyone can vote!"}
           </ItemDescription>
         </ItemContent>
@@ -160,14 +166,18 @@ const CreatePoll = ({ onPollCreated }) => {
               <Button
                 size="icon-sm"
                 variant="outline"
-                className="rounded-full hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                className="rounded-full transition-colors hover:opacity-80"
+                style={{ background: '#fef3c7', border: '1px solid #fde68a', color: '#92400e' }}
                 aria-label="Add Poll"
               >
                 <Plus className="h-4 w-4" />
               </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[500px] w-[95vw] max-w-[95vw] rounded-xl">
+            <DialogContent 
+              className="sm:max-w-[500px] w-[95vw] max-w-[95vw]"
+              style={{ borderRadius: '20px', border: '1px solid #e7e5e4', background: '#fff' }}
+            >
               {!showPrivateKey ? (
                 <form onSubmit={handleSubmit}>
                   <DialogHeader>
@@ -185,7 +195,7 @@ const CreatePoll = ({ onPollCreated }) => {
 
                   <div className="grid gap-4 mt-4 p-1 max-h-[70vh] overflow-y-auto">
                     <div className="grid gap-2">
-                      <Label htmlFor="question" className="text-sm font-medium">
+                      <Label htmlFor="question" className="text-sm font-medium" style={{ color: '#57534e' }}>
                         Question
                       </Label>
                       <Input
@@ -193,12 +203,13 @@ const CreatePoll = ({ onPollCreated }) => {
                         placeholder="Type your question..."
                         value={question}
                         onChange={(e) => setQuestion(e.target.value)}
-                        className="w-full"
+                        className="w-full focus:ring-amber-500 focus:border-amber-500"
+                        style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                       />
                     </div>
 
                     <div className="grid gap-2">
-                      <Label className="text-sm font-medium">Options</Label>
+                      <Label className="text-sm font-medium" style={{ color: '#57534e' }}>Options</Label>
                       {options.map((option, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <Input
@@ -207,7 +218,8 @@ const CreatePoll = ({ onPollCreated }) => {
                             onChange={(e) =>
                               handleChangeOption(index, e.target.value)
                             }
-                            className="flex-1"
+                            className="flex-1 focus:ring-amber-500 focus:border-amber-500"
+                            style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                           />
                         </div>
                       ))}
@@ -215,7 +227,8 @@ const CreatePoll = ({ onPollCreated }) => {
                         <button
                           type="button"
                           onClick={handleAddOption}
-                          className="text-sm text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                          className="text-sm font-medium transition-colors hover:underline"
+                          style={{ color: '#d97706' }}
                         >
                           + Add another option
                         </button>
@@ -223,7 +236,10 @@ const CreatePoll = ({ onPollCreated }) => {
                     </div>
 
                     <div className="space-y-2">
-                        <div className="flex items-center space-x-3 p-2 bg-gray-50 rounded-lg">
+                        <div 
+                          className="flex items-center space-x-3 p-2 rounded-lg"
+                          style={{ background: '#f5f4f2' }}
+                        >
                         <Checkbox
                           id="private"
                           checked={isPrivate}
@@ -232,18 +248,20 @@ const CreatePoll = ({ onPollCreated }) => {
                         <Label
                           htmlFor="private"
                           className="flex items-center gap-2"
+                          style={{ color: '#57534e' }}
                         >
-                          <Lock className="h-4 w-4" />
+                          <Lock className="h-4 w-4" style={{ color: '#92400e' }} />
                           Make this poll private
                         </Label>
                       </div>
                       <div className="space-y-3 pt-2">
-                        <Label htmlFor="duration">Poll Duration</Label>
+                        <Label htmlFor="duration" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Poll Duration</Label>
                         <select
                           id="duration"
                           value={duration}
                           onChange={(e) => setDuration(e.target.value)}
-                          className="w-full p-2 border rounded-md"
+                          className="w-full p-2 focus:ring-amber-500 focus:border-amber-500"
+                          style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                         >
                           <option value="24 hours">24 hours</option>
                           <option value="3 days">3 days</option>
@@ -256,11 +274,19 @@ const CreatePoll = ({ onPollCreated }) => {
 
                   <DialogFooter className="mt-4 gap-2">
                     <DialogClose asChild>
-                      <Button variant="outline" className="flex-1">
+                      <Button 
+                        variant="outline" 
+                        className="flex-1 hover:opacity-80"
+                        style={{ border: '1.5px solid #e7e5e4', borderRadius: '12px', color: '#57534e' }}
+                      >
                         Cancel
                       </Button>
                     </DialogClose>
-                    <Button type="submit" className="flex-1">
+                    <Button 
+                      type="submit" 
+                      className="flex-1 text-white syne font-semibold hover:opacity-90"
+                      style={{ background: '#1c1917', borderRadius: '12px' }}
+                    >
                       Create {isPrivate ? 'Private' : 'Public'} Poll
                     </Button>
                   </DialogFooter>

@@ -57,8 +57,8 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
 
   if (!poll || !poll._id) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="text-gray-500 text-center py-2">Loading poll...</div>
+      <div className="rounded-lg shadow-sm p-4" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
+        <div className="text-center py-2" style={{ color: '#a8a29e' }}>Loading poll...</div>
       </div>
     );
   }
@@ -66,13 +66,17 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
   
   const handleDeletePoll = async () => {
     toast.custom((t) => (
-      <div className="bg-white rounded-lg shadow-lg p-4 w-full max-w-md">
-        <h3 className="font-semibold text-lg mb-2">Delete Poll</h3>
-        <p className="text-gray-700 mb-4">Are you sure you want to delete this poll? This action cannot be undone.</p>
+      <div 
+        className="rounded-lg shadow-lg p-4 w-full max-w-md"
+        style={{ background: '#fff', border: '1px solid #e7e5e4' }}
+      >
+        <h3 className="font-semibold text-lg mb-2 syne" style={{ color: '#1c1917' }}>Delete Poll</h3>
+        <p className="mb-4" style={{ color: '#57534e' }}>Are you sure you want to delete this poll? This action cannot be undone.</p>
         <div className="flex justify-end space-x-2">
           <button
             onClick={() => toast.dismiss(t)}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none"
+            className="px-4 py-2 text-sm font-medium rounded-md focus:outline-none transition-colors"
+            style={{ background: '#f5f4f2', color: '#57534e' }}
           >
             Cancel
           </button>
@@ -93,7 +97,8 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
                 setIsDeleting(false);
               }
             }}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-md hover:bg-red-700 focus:outline-none"
+            className="px-4 py-2 text-sm font-medium text-white rounded-md focus:outline-none transition-opacity hover:opacity-90"
+            style={{ background: '#dc2626' }}
             disabled={isDeleting}
           >
             {isDeleting ? 'Deleting...' : 'Delete'}
@@ -101,7 +106,7 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
         </div>
       </div>
     ), {
-      duration: 10000, // Keep it open longer since user needs to interact
+      duration: 10000,
       position: 'top-center',
     });
   };
@@ -118,42 +123,57 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
       {/* Creator Info and Actions */}
       <div className="flex items-start justify-between gap-3 mb-5">
         <div className="flex items-center gap-3">
-          <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
+          <Avatar className="h-8 w-8 sm:h-10 sm:w-10" style={{ border: '2px solid #e7e5e4' }}>
             <AvatarImage 
               src={poll.createdBy?.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=anonymous'} 
               alt={poll.createdBy?.username || 'Anonymous'} 
             />
-            <AvatarFallback className="bg-gray-100 text-gray-600 font-medium text-xs sm:text-sm">
+            <AvatarFallback 
+              className="font-medium text-xs sm:text-sm"
+              style={{ background: '#fef3c7', color: '#92400e' }}
+            >
               {(poll.createdBy?.username || 'Anonymous').charAt(0).toUpperCase()}
             </AvatarFallback>
           </Avatar>
           <div className="min-w-0 flex-1">
-            <p className="text-sm sm:text-base font-medium text-gray-900 truncate">
+            <p 
+              className="text-sm sm:text-base font-medium truncate"
+              style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+            >
               {poll.createdBy?.name || poll.createdBy?.username || 'Anonymous User'}
             </p>
-            <p className="text-xs sm:text-sm text-gray-500">
+            <p className="text-xs sm:text-sm" style={{ color: '#a8a29e' }}>
               @{poll.createdBy?.username || 'anonymous'}
             </p>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-1 text-xs sm:text-sm text-gray-500">
+        <div className="flex flex-col items-end gap-1 text-xs sm:text-sm" style={{ color: '#a8a29e' }}>
           {isPollOwner && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-7 w-7 sm:h-8 sm:w-8">
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-7 w-7 sm:h-8 sm:w-8 hover:bg-amber-50"
+                  style={{ color: '#a8a29e' }}
+                >
                   <MoreVertical className="h-4 w-4" />
                   <span className="sr-only">Poll actions</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setIsEditDialogOpen(true)}>
+              <DropdownMenuContent align="end" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
+                <DropdownMenuItem 
+                  onClick={() => setIsEditDialogOpen(true)}
+                  style={{ color: '#57534e' }}
+                >
                   <Edit className="mr-2 h-4 w-4" />
                   <span>Edit Poll</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem 
-                  className="text-red-600 focus:text-red-600"
+                  className="focus:text-red-600"
                   onClick={handleDeletePoll}
                   disabled={isDeleting}
+                  style={{ color: '#dc2626' }}
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   <span>{isDeleting ? 'Deleting...' : 'Delete Poll'}</span>
@@ -163,7 +183,13 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
           )}
           <div className="flex items-center gap-2">
             <span>{formatDateShort(poll.createdAt || new Date())}</span>
-            <span className="text-green-600 font-medium">
+            <span 
+              className="font-medium px-2 py-0.5 rounded-full text-xs"
+              style={{ 
+                background: poll.isPrivate ? '#fef2f2' : '#f0fdf4',
+                color: poll.isPrivate ? '#dc2626' : '#16a34a'
+              }}
+            >
               {poll.isPrivate ? 'Private' : 'Public'}
             </span>
           </div>
@@ -171,7 +197,10 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
       </div>
       
       {/* Poll Question */}
-      <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-5 sm:mb-6 leading-tight">
+      <h3 
+        className="text-base sm:text-lg font-semibold mb-5 sm:mb-6 leading-tight"
+        style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+      >
         {poll.description || 'Untitled Poll'}
       </h3>
 
@@ -186,15 +215,18 @@ const PollCard = ({ poll, onVote, onPollUpdated }) => {
       </div>
 
       {/* Poll Stats (compact) */}
-      <div className="flex justify-end pt-3 mt-1 border-t border-gray-100">
-        <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+      <div 
+        className="flex justify-end pt-3 mt-1"
+        style={{ borderTop: '1px solid #f5f4f2' }}
+      >
+        <div className="flex items-center gap-2 text-xs sm:text-sm" style={{ color: '#a8a29e' }}>
           {!isExpired && timeRemaining > 0 ? (
             <>
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span className="text-xs sm:text-sm text-gray-600">{timeRemaining} hours remaining</span>
+              <div className="w-2 h-2 rounded-full" style={{ background: '#22c55e' }}></div>
+              <span className="text-xs sm:text-sm" style={{ color: '#57534e' }}>{timeRemaining} hours remaining</span>
             </>
           ) : (
-            <span className="text-xs sm:text-sm text-red-500">Poll Ended</span>
+            <span className="text-xs sm:text-sm" style={{ color: '#dc2626' }}>Poll Ended</span>
           )}
         </div>
       </div>

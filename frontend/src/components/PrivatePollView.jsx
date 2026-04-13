@@ -154,37 +154,86 @@ const PrivatePollView = () => {
     navigate('/feed');
   };
 
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div></div>;
+  if (isLoading) return (
+    <div 
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: '#fafaf9' }}
+    >
+      <div className="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto" style={{ borderColor: '#f59e0b' }}></div>
+    </div>
+  );
 
   if (!poll) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Card className="w-full max-w-md p-6 text-center">
-        <Lock className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-        <h3 className="text-lg font-semibold">Poll Not Found</h3>
-        <p className="text-gray-600 mt-2">This poll may not exist or you may not have access.</p>
-        <Button onClick={handleGoBack} className="mt-4">Go Back</Button>
+    <div 
+      className="min-h-screen flex items-center justify-center"
+      style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+      `}</style>
+      <Card 
+        className="w-full max-w-md p-6 text-center"
+        style={{ background: '#fff', border: '1px solid #e7e5e4', borderRadius: '16px' }}
+      >
+        <Lock className="h-12 w-12 mx-auto mb-4" style={{ color: '#a8a29e' }} />
+        <h3 className="text-lg font-semibold syne" style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}>
+          Poll Not Found
+        </h3>
+        <p className="mt-2" style={{ color: '#57534e' }}>This poll may not exist or you may not have access.</p>
+        <Button 
+          onClick={handleGoBack} 
+          className="mt-4 syne font-semibold text-white hover:opacity-90"
+          style={{ background: '#1c1917', borderRadius: '12px', fontFamily: "'Syne', sans-serif" }}
+        >
+          Go Back
+        </Button>
       </Card>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div 
+      className="min-h-screen p-4"
+      style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}
+    >
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        .syne { font-family: 'Syne', sans-serif; }
+      `}</style>
       <div className="max-w-2xl mx-auto">
-        <Button variant="ghost" onClick={handleGoBack} className="mb-4">
+        <Button 
+          variant="ghost" 
+          onClick={handleGoBack} 
+          className="mb-4"
+          style={{ color: '#57534e' }}
+        >
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Feed
         </Button>
 
-        <Card>
+        <Card style={{ background: '#fff', border: '1px solid #e7e5e4', borderRadius: '16px' }}>
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 mb-2">
-                <Lock className="h-5 w-5 text-blue-600" />
-                <span className="text-sm font-medium text-blue-600">Private Poll</span>
+                <Lock className="h-5 w-5" style={{ color: '#d97706' }} />
+                <span 
+                  className="text-sm font-medium syne"
+                  style={{ color: '#d97706', fontFamily: "'Syne', sans-serif" }}
+                >
+                  Private Poll
+                </span>
               </div>
               <ShareButton pollId={poll._id} pollDescription={poll.description} />
             </div>
-            <CardTitle className="text-xl">{poll.description}</CardTitle>
-            <CardDescription className="flex items-center gap-2">
+            <CardTitle 
+              className="text-xl syne"
+              style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+            >
+              {poll.description}
+            </CardTitle>
+            <CardDescription 
+              className="flex items-center gap-2"
+              style={{ color: '#57534e' }}
+            >
               <Users className="h-4 w-4" /> Exclusive access poll
             </CardDescription>
           </CardHeader>
@@ -192,40 +241,75 @@ const PrivatePollView = () => {
           <CardContent className="space-y-4">
             {!hasVoted ? (
               <div className="space-y-3">
-                <h4 className="font-medium">Cast Your Vote:</h4>
+                <h4 
+                  className="font-medium syne"
+                  style={{ color: '#1c1917', fontFamily: "'Syne', sans-serif" }}
+                >
+                  Cast Your Vote:
+                </h4>
                 {poll.options.map((option, index) => (
                   <div
                     key={index}
-                    className={`p-3 border rounded-lg cursor-pointer transition-colors ${
-                      selectedOption === index ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
-                    }`}
+                    className="p-3 rounded-lg cursor-pointer transition-all duration-200"
+                    style={{
+                      border: selectedOption === index ? '1px solid #f59e0b' : '1px solid #e7e5e4',
+                      background: selectedOption === index ? '#fef3c7' : '#fafaf9',
+                    }}
                     onClick={() => setSelectedOption(index)}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-4 h-4 rounded-full border-2 ${
-                        selectedOption === index ? 'border-blue-500 bg-blue-500' : 'border-gray-300'
-                      }`}>
+                      <div 
+                        className="w-4 h-4 rounded-full border-2 flex items-center justify-center"
+                        style={{
+                          borderColor: selectedOption === index ? '#f59e0b' : '#e7e5e4',
+                          background: selectedOption === index ? '#f59e0b' : 'transparent'
+                        }}
+                      >
                         {selectedOption === index && <div className="w-full h-full rounded-full bg-white scale-50"></div>}
                       </div>
-                      <span className="flex-1">{option}</span>
+                      <span className="flex-1" style={{ color: '#1c1917' }}>{option}</span>
                     </div>
                   </div>
                 ))}
-                <Button onClick={handleVote} disabled={selectedOption === null} className="w-full mt-4">Submit Vote</Button>
+                <Button 
+                  onClick={handleVote} 
+                  disabled={selectedOption === null} 
+                  className="w-full mt-4 syne font-semibold text-white hover:opacity-90"
+                  style={{ 
+                    background: '#1c1917', 
+                    borderRadius: '12px',
+                    fontFamily: "'Syne', sans-serif"
+                  }}
+                >
+                  Submit Vote
+                </Button>
               </div>
             ) : (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <BarChart3 className="h-5 w-5 text-green-600" />
-                  <h4 className="font-medium text-green-600">Live Results</h4>
+                  <BarChart3 className="h-5 w-5" style={{ color: '#22c55e' }} />
+                  <h4 
+                    className="font-medium syne"
+                    style={{ color: '#22c55e', fontFamily: "'Syne', sans-serif" }}
+                  >
+                    Live Results
+                  </h4>
                 </div>
                 {results.map((result, index) => (
                   <div key={index} className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span className="font-medium">{result.option}</span>
-                      <span className="text-gray-600">{result.votes} votes ({result.percentage.toFixed(1)}%)</span>
+                      <span className="font-medium" style={{ color: '#1c1917' }}>{result.option}</span>
+                      <span style={{ color: '#57534e' }}>{result.votes} votes ({result.percentage.toFixed(1)}%)</span>
                     </div>
-                    <Progress value={result.percentage} className="h-2" />
+                    <div className="h-2 rounded-full overflow-hidden" style={{ background: '#e7e5e4' }}>
+                      <div
+                        className="h-full rounded-full transition-all duration-500"
+                        style={{ 
+                          width: `${result.percentage}%`,
+                          background: '#f59e0b'
+                        }}
+                      />
+                    </div>
                   </div>
                 ))}
               </div>

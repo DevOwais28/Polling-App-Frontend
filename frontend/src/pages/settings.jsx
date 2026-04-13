@@ -149,7 +149,14 @@ const SettingsPage = () => {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#fafaf9', fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Google Font Loader */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+        .syne { font-family: 'Syne', sans-serif; }
+        .dm { font-family: 'DM Sans', sans-serif; }
+      `}</style>
+
       <Navbar />
 
       <div className="max-w-6xl mx-auto px-4 py-6">
@@ -157,7 +164,7 @@ const SettingsPage = () => {
           {/* Left Sidebar */}
           <div className="hidden md:block md:col-span-1">
             <div className="sticky top-6 space-y-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-4">
+              <div className="rounded-xl p-4" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
                 <AppSidebar />
               </div>
             </div>
@@ -165,15 +172,15 @@ const SettingsPage = () => {
 
           {/* Main Settings Content */}
           <div className="md:col-span-2 lg:col-span-2">
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="rounded-xl shadow-sm" style={{ background: '#fff', border: '1px solid #e7e5e4' }}>
               {/* Settings Header */}
-              <div className="border-b border-gray-200 p-6">
-                <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-                <p className="text-sm text-gray-600 mt-1">Manage your account settings and preferences</p>
+              <div className="p-6" style={{ borderBottom: '1px solid #e7e5e4' }}>
+                <h1 className="text-2xl font-bold syne" style={{ color: '#1c1917' }}>Settings</h1>
+                <p className="text-sm mt-1" style={{ color: '#57534e' }}>Manage your account settings and preferences</p>
               </div>
 
               {/* Settings Navigation */}
-              <div className="border-b border-gray-200">
+              <div style={{ borderBottom: '1px solid #e7e5e4' }}>
                 <nav className="flex space-x-8 px-6" aria-label="Settings navigation">
                   {tabs.map((tab) => {
                     const Icon = tab.icon
@@ -183,9 +190,13 @@ const SettingsPage = () => {
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 py-4 px-1 border-b-2 text-sm font-medium transition-colors ${
                           activeTab === tab.id
-                            ? 'border-blue-500 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            ? 'text-amber-600'
+                            : 'border-transparent hover:text-amber-600'
                         }`}
+                        style={{ 
+                          borderColor: activeTab === tab.id ? '#f59e0b' : 'transparent',
+                          color: activeTab === tab.id ? '#d97706' : '#57534e'
+                        }}
                       >
                         <Icon className="w-4 h-4" />
                         {tab.label}
@@ -201,42 +212,50 @@ const SettingsPage = () => {
                 {activeTab === 'account' && (
                   <div className="space-y-6">
                     <div>
-                      <h2 className="text-lg font-semibold text-gray-900 mb-4">Account Information</h2>
+                      <h2 className="text-lg font-semibold mb-4 syne" style={{ color: '#1c1917' }}>Account Information</h2>
                       <form onSubmit={handleAccountUpdate} className="space-y-4">
                         <div>
-                          <Label htmlFor="name">Display Name</Label>
+                          <Label htmlFor="name" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Display Name</Label>
                           <Input
                             id="name"
                             type="text"
                             value={accountData.name}
                             onChange={(e) => setAccountData({ ...accountData, name: e.target.value })}
-                            className="mt-1"
+                            className="mt-1 focus:ring-amber-500 focus:border-amber-500"
+                            style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                             placeholder="Enter your display name"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="username">Username</Label>
+                          <Label htmlFor="username" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Username</Label>
                           <Input
                             id="username"
                             type="text"
                             value={accountData.username}
                             onChange={(e) => setAccountData({ ...accountData, username: e.target.value })}
-                            className="mt-1"
+                            className="mt-1 focus:ring-amber-500 focus:border-amber-500"
+                            style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                             placeholder="Enter your username"
                           />
                         </div>
                         <div>
-                          <Label htmlFor="email">Email Address</Label>
+                          <Label htmlFor="email" style={{ color: '#57534e', fontSize: '14px', fontWeight: 500 }}>Email Address</Label>
                           <Input
                             id="email"
                             type="email"
                             value={accountData.email}
                             onChange={(e) => setAccountData({ ...accountData, email: e.target.value })}
-                            className="mt-1"
+                            className="mt-1 focus:ring-amber-500 focus:border-amber-500"
+                            style={{ background: '#fafaf9', border: '1px solid #e7e5e4', borderRadius: '12px' }}
                             placeholder="Enter your email address"
                           />
                         </div>
-                        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+                        <Button 
+                          type="submit" 
+                          disabled={loading} 
+                          className="text-white hover:opacity-90 syne font-semibold"
+                          style={{ background: '#1c1917', borderRadius: '12px' }}
+                        >
                           {loading ? 'Saving...' : 'Save Changes'}
                         </Button>
                       </form>
@@ -319,7 +338,12 @@ const SettingsPage = () => {
                             </button>
                           </div>
                         </div>
-                        <Button type="submit" disabled={loading} className="bg-blue-600 hover:bg-blue-700">
+                        <Button 
+                          type="submit" 
+                          disabled={loading} 
+                          className="text-white hover:opacity-90 syne font-semibold"
+                          style={{ background: '#1c1917', borderRadius: '12px' }}
+                        >
                           {loading ? 'Changing Password...' : 'Change Password'}
                         </Button>
                       </form>

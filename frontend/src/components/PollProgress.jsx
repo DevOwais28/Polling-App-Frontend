@@ -122,7 +122,7 @@ const handleVote = async (optionIndex) => {
       <div className="w-full p-4">
         <div className="animate-pulse space-y-3">
           {[...Array(options.length)].map((_, i) => (
-            <div key={i} className="h-12 bg-gray-200 rounded-lg"></div>
+            <div key={i} className="h-12 rounded-lg" style={{ background: '#e7e5e4' }}></div>
           ))}
         </div>
       </div>
@@ -135,36 +135,45 @@ const handleVote = async (optionIndex) => {
         const votesForOption = pollVotes[index] || 0;
         const percentage = totalVotes > 0 ? Math.round((votesForOption / totalVotes) * 100) : 0;
 
+        const isSelected = userVote === index;
+        
         return (
           <button
             key={index}
             onClick={() => handleVote(index)}
             disabled={userVote !== null}
-            className={`w-full text-left p-3 rounded-lg border transition-all duration-200
-              ${userVote !== null
-                ? userVote === index
-                  ? "border-blue-500 bg-blue-50"
-                  : "border-gray-200 bg-gray-50"
-                : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-              } ${userVote !== null ? "cursor-default" : "cursor-pointer"}`}
+            className={`w-full text-left p-3 rounded-lg border transition-all duration-200 ${
+              userVote !== null ? "cursor-default" : "cursor-pointer"
+            }`}
+            style={{
+              borderColor: isSelected ? '#f59e0b' : '#e7e5e4',
+              background: isSelected ? '#fef3c7' : (userVote !== null ? '#f5f4f2' : '#fafaf9'),
+            }}
           >
             <div className="flex justify-between items-center mb-2">
-              <span className="font-medium text-gray-900">{option}</span>
+              <span 
+                className="font-medium"
+                style={{ color: '#1c1917', fontFamily: "'DM Sans', sans-serif" }}
+              >{option}</span>
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">{votesForOption} votes</span>
+                <span className="text-sm" style={{ color: '#a8a29e' }}>{votesForOption} votes</span>
                 {totalVotes > 0 && (
-                  <span className="text-sm font-medium text-gray-900">{percentage}%</span>
+                  <span 
+                    className="text-sm font-medium"
+                    style={{ color: isSelected ? '#92400e' : '#57534e' }}
+                  >{percentage}%</span>
                 )}
               </div>
             </div>
 
             {totalVotes > 0 && (
-              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+              <div className="h-2 rounded-full overflow-hidden" style={{ background: '#e7e5e4' }}>
                 <div
-                  className={`h-full transition-all duration-500 rounded-full ${
-                    userVote === index ? "bg-blue-500" : "bg-gray-400"
-                  }`}
-                  style={{ width: `${percentage}%` }}
+                  className="h-full transition-all duration-500 rounded-full"
+                  style={{ 
+                    width: `${percentage}%`,
+                    background: isSelected ? '#f59e0b' : '#a8a29e'
+                  }}
                 />
               </div>
             )}

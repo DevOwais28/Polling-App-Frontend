@@ -100,15 +100,19 @@ const CommentSection = ({ pollId }) => {
   };
 
   return (
-    <div className="mt-3 border-t border-gray-100 pt-3">
+    <div className="mt-3 pt-3" style={{ borderTop: '1px solid #e7e5e4' }}>
       <button
         onClick={() => setShowComments(!showComments)}
-        className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors group"
+        className="flex items-center gap-2 text-sm transition-colors group"
+        style={{ color: '#a8a29e' }}
       >
-        <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" />
-        <span className="font-medium">{showComments ? 'Hide' : 'Show'} Comments</span>
+        <MessageCircle className="w-4 h-4 group-hover:scale-110 transition-transform" style={{ color: '#d97706' }} />
+        <span className="font-medium" style={{ color: '#57534e' }}>{showComments ? 'Hide' : 'Show'} Comments</span>
         {comments.length > 0 && (
-          <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-xs font-medium">
+          <span 
+            className="px-2 py-0.5 rounded-full text-xs font-medium"
+            style={{ background: '#f5f4f2', color: '#57534e' }}
+          >
             {comments.length}
           </span>
         )}
@@ -118,11 +122,11 @@ const CommentSection = ({ pollId }) => {
         <div className="mt-3 space-y-4 text-left">
           {/* Add Comment Form */}
           {user ? (
-            <div className="bg-gray-50 rounded-lg p-3">
+            <div className="rounded-lg p-3" style={{ background: '#f5f4f2' }}>
               <div className="flex gap-3">
-                <Avatar className="w-8 h-8 ring-2 ring-white flex-shrink-0">
+                <Avatar className="w-8 h-8 flex-shrink-0" style={{ border: '2px solid #fff' }}>
                   <AvatarImage src={user.avatar} />
-                  <AvatarFallback className="text-xs font-medium bg-blue-100 text-blue-600">
+                  <AvatarFallback className="text-xs font-medium" style={{ background: '#fef3c7', color: '#92400e' }}>
                     {user.username?.charAt(0)?.toUpperCase() || 
                      user.name?.charAt(0)?.toUpperCase() || 'U'}
                   </AvatarFallback>
@@ -132,18 +136,20 @@ const CommentSection = ({ pollId }) => {
                     placeholder="Share your thoughts..."
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="min-h-[60px] text-sm border-gray-200 focus:border-blue-300 resize-none text-left"
+                    className="min-h-[60px] text-sm resize-none text-left"
+                    style={{ borderColor: '#e7e5e4', fontFamily: "'DM Sans', sans-serif" }}
                     maxLength={500}
                   />
                   <div className="flex justify-between items-center mt-2">
-                    <span className="text-xs text-gray-400 text-left">
+                    <span className="text-xs text-left" style={{ color: '#a8a29e' }}>
                       {newComment.length}/500
                     </span>
                     <Button
                       onClick={handleAddComment}
                       disabled={!newComment.trim() || loading}
                       size="sm"
-                      className="gap-1 bg-blue-600 hover:bg-blue-700"
+                      className="gap-1 syne font-semibold text-white hover:opacity-90"
+                      style={{ background: '#1c1917', borderRadius: '8px', fontFamily: "'Syne', sans-serif" }}
                     >
                       <Send className="w-3 h-3" />
                       Comment
@@ -153,10 +159,15 @@ const CommentSection = ({ pollId }) => {
               </div>
             </div>
           ) : (
-            <div className="text-left py-6 bg-gray-50 rounded-lg">
-              <MessageCircle className="w-8 h-8 text-gray-400 mb-2" />
-              <p className="text-sm text-gray-600 mb-3">Login to join the conversation</p>
-              <Button size="sm" variant="outline" onClick={() => window.location.href = '/login'}>
+            <div className="text-left py-6 rounded-lg" style={{ background: '#f5f4f2' }}>
+              <MessageCircle className="w-8 h-8 mb-2" style={{ color: '#d97706' }} />
+              <p className="text-sm mb-3" style={{ color: '#57534e' }}>Login to join the conversation</p>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                onClick={() => window.location.href = '/login'}
+                style={{ borderColor: '#e7e5e4', color: '#57534e', borderRadius: '8px' }}
+              >
                 Login to Comment
               </Button>
             </div>
@@ -166,11 +177,15 @@ const CommentSection = ({ pollId }) => {
           {comments.length > 0 && (
             <div className="space-y-3 text-left">
               {comments.map((comment) => (
-                <div key={comment._id} className="bg-white border border-gray-100 rounded-lg p-4 hover:border-gray-200 transition-colors text-left">
+                <div 
+                  key={comment._id} 
+                  className="rounded-lg p-4 transition-colors text-left"
+                  style={{ background: '#fff', border: '1px solid #e7e5e4' }}
+                >
                   <div className="flex gap-3 text-left">
-                    <Avatar className="w-8 h-8 ring-2 ring-gray-100 flex-shrink-0">
+                    <Avatar className="w-8 h-8 flex-shrink-0" style={{ border: '2px solid #e7e5e4' }}>
                       <AvatarImage src={comment.userId?.avatar} />
-                      <AvatarFallback className="text-xs font-medium bg-gray-100 text-gray-600">
+                      <AvatarFallback className="text-xs font-medium" style={{ background: '#fef3c7', color: '#92400e' }}>
                         {comment.userId?.username?.charAt(0)?.toUpperCase() || 
                          comment.userId?.name?.charAt(0)?.toUpperCase() || 'U'}
                       </AvatarFallback>
@@ -178,26 +193,24 @@ const CommentSection = ({ pollId }) => {
                     <div className="flex-1 min-w-0 text-left">
                       <div className="flex justify-between items-start mb-2 text-left">
                         <div className="flex items-center gap-2 text-left">
-                          <p className="text-sm font-semibold text-gray-900 text-left">
+                          <p className="text-sm font-semibold text-left" style={{ color: '#1c1917' }}>
                             {truncate(comment.userId?.name || 'Anonymous User', 18)}
                           </p>
-                          <p className="text-xs text-gray-500 text-left">
+                          <p className="text-xs text-left" style={{ color: '#a8a29e' }}>
                             {/* @{comment.userId?.username || 'anonymous'} */}
                           </p>
-                          <p className="text-xs text-gray-400 hidden sm:inline">•</p>
-                          <p className="text-xs text-gray-400">
+                          <p className="text-xs hidden sm:inline" style={{ color: '#e7e5e4' }}>•</p>
+                          <p className="text-xs" style={{ color: '#a8a29e' }}>
                             {/* {formatDate(comment.createdAt)} */}
                           </p>
                         </div>
                         <CommentActions 
                           comment={comment} 
                           isOwner={
-                            // Match by various possible identifier shapes
                             comment.userId?._id === user?._id ||
                             comment.userId === user?._id ||
                             comment.userId === user?.id ||
                             comment.userId?._id === user?.id ||
-                            // Fallback to username/email match
                             (comment.userId?.username && comment.userId?.username === user?.username) ||
                             (comment.userId?.email && comment.userId?.email === user?.email)
                           }
@@ -205,7 +218,7 @@ const CommentSection = ({ pollId }) => {
                           onDelete={handleDeleteComment} 
                         />
                       </div>
-                      <p className="mt-1 text-sm text-gray-700">
+                      <p className="mt-1 text-sm" style={{ color: '#57534e' }}>
                         {comment.content || comment.text}
                       </p>
                     </div>
@@ -216,7 +229,7 @@ const CommentSection = ({ pollId }) => {
           )}
 
           {comments.length === 0 && !loading && (
-            <div className="text-left py-4 text-gray-500 text-sm">
+            <div className="text-left py-4 text-sm" style={{ color: '#a8a29e' }}>
               <p>No comments yet. Be the first to share your thoughts!</p>
             </div>
           )}
